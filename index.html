@@ -1916,7 +1916,12 @@ function renderHist(){
 /* ── SHEETS API ── */
 async function callAPI(action, payload={}){
   if(APPS_SCRIPT_URL==='YOUR_APPS_SCRIPT_URL_HERE') throw new Error('DEMO_MODE');
-  const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify({action,...payload}),headers:{'Content-Type':'text/plain'}});
+  // Syntax fix: keep fetch options expanded so the call is easy to verify and maintain.
+  const res=await fetch(APPS_SCRIPT_URL, {
+    method:'POST',
+    body:JSON.stringify({action, ...payload}),
+    headers:{'Content-Type':'text/plain'}
+  });
   const json=await res.json();
   if(!json.ok) throw new Error(json.error||'API error');
   return json.data;
