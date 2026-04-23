@@ -1129,7 +1129,7 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
 /* ════════════════════════════════════════════════
    CONFIG
 ════════════════════════════════════════════════ */
-const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxDte4YFL3mUsJpAoNWJL_XiQA6qP7vm5iC-Yeco647HMcOHd6kwSgY9u0eBXPA_G1N5Q/exec';
 const ADMIN_CREDS = { admin: 'password123' };
 
 /* ════════════════════════════════════════════════
@@ -1320,25 +1320,13 @@ function populateFilters() {
     try{const dt=new Date(d);return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;}catch{return null;}
   }).filter(Boolean))].sort().reverse();
 
-  function fill(selId, items, defaultLabel) {
-    const sel = document.getElementById(selId); if(!sel)return;
-    const cur = sel.value;
-    sel.innerHTML=`<option value="">${defaultLabel}</option>`;
-    items.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);});
-    if(cur) sel.value=cur;
-  }
-
-  fill('p-zone','Zone: all', zones, 'All zones'); fill('p-pod','POD: all', pods, 'All PODs');
-  fill('rto-zone','Zone: all', zones, 'All zones');
-  fill('fr-zone','Zone: all', zones, 'All zones');
-  fill('fr-lb1', lb1s, 'All buckets');
-  fill('fr-month', months, 'All months');
-  fill('sc-zone','Zone: all', zones, 'All zones');
-
-  // Fix the fill function signature
-  ['p-zone','p-pod','rto-zone','fr-zone','sc-zone'].forEach(id => fillSel(id, id==='p-pod'?pods:zones));
+  fillSel('p-zone', zones);
+  fillSel('p-pod', pods);
+  fillSel('rto-zone', zones);
+  fillSel('fr-zone', zones);
   fillSel('fr-lb1', lb1s);
   fillSel('fr-month', months);
+  fillSel('sc-zone', zones);
 
   // LB2 for fraud detail
   const lb2sel = document.getElementById('fr-lb2');
@@ -1879,7 +1867,7 @@ function renderTrend(){
   tLineInst=new Chart(document.getElementById('tLineC'),{type:'line',data:{labels:WEEKS,datasets},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
       scales:{x:{ticks:{color:'#5a6a96',font:{size:10,family:'JetBrains Mono'}},grid:{color:'rgba(255,255,255,0.04)'}},
-              y:{ticks:{color:'#5a6a96',font:{size:10,family:'JetBrains Mono'}},grid:{color:'rgba(255,255,255,0.04)'}}}}}});
+              y:{ticks:{color:'#5a6a96',font:{size:10,family:'JetBrains Mono'}},grid:{color:'rgba(255,255,255,0.04)'}}}}});
 
   const barDims=fv?[fv]:allDims.slice(0,8);
   const barVals=barDims.map(d=>{
@@ -1893,7 +1881,7 @@ function renderTrend(){
   tBarInst=new Chart(document.getElementById('tBarC'),{type:'bar',data:{labels:barDims,datasets:[{data:barVals,backgroundColor:barVals.map(v=>v>70?'rgba(244,63,94,.55)':v>40?'rgba(245,158,11,.55)':'rgba(16,185,129,.55)'),borderColor:barVals.map(v=>v>70?'var(--rose)':v>40?'var(--amber)':'var(--emerald)'),borderWidth:1,borderRadius:5}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
       scales:{x:{ticks:{color:'#5a6a96',font:{size:10}},grid:{display:false}},
-              y:{ticks:{color:'#5a6a96',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}}}}}});
+              y:{ticks:{color:'#5a6a96',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}}}}});
 }
 
 /* ── UPLOAD HISTORY ── */
@@ -1916,12 +1904,7 @@ function renderHist(){
 /* ── SHEETS API ── */
 async function callAPI(action, payload={}){
   if(APPS_SCRIPT_URL==='YOUR_APPS_SCRIPT_URL_HERE') throw new Error('DEMO_MODE');
-  // Syntax fix: keep fetch options expanded so the call is easy to verify and maintain.
-  const res=await fetch(APPS_SCRIPT_URL, {
-    method:'POST',
-    body:JSON.stringify({action, ...payload}),
-    headers:{'Content-Type':'text/plain'}
-  });
+  const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify({action,...payload}),headers:{'Content-Type':'text/plain'}});
   const json=await res.json();
   if(!json.ok) throw new Error(json.error||'API error');
   return json.data;
