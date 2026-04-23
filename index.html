@@ -4,450 +4,381 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hub Loss Scorecard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-/* ═══════════════════════════════════════════════════════
-   HUB LOSS SCORECARD — Professional Logistics Dark Theme
-   Palette: Slate-900 base · Indigo accent · Amber warning · Rose danger
-═══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   HUB LOSS SCORECARD v4
+   THEME: Vibrant light — white base + rich colour accents
+   Palette: Cobalt blue · Crimson · Amber · Emerald · Violet
+══════════════════════════════════════════════════ */
 :root {
-  --s950: #0c0f18;
-  --s900: #111521;
-  --s850: #161b2e;
-  --s800: #1c2340;
-  --s750: #222b50;
-  --s700: #2a3460;
-  --s600: #374478;
-  --s500: #4a5a96;
+  --page-bg:   #f0f4ff;
+  --card-bg:   #ffffff;
+  --card-bg2:  #f8f9ff;
+  --nav-bg:    #1e2756;
+  --topbar-bg: #1e2756;
 
-  --indigo:   #6366f1;
-  --indigo-l: #818cf8;
-  --indigo-ll:#c7d2fe;
-  --indigo-bg:rgba(99,102,241,0.12);
+  --blue:      #2563eb;
+  --blue-l:    #3b82f6;
+  --blue-ll:   #93c5fd;
+  --blue-bg:   #eff6ff;
+  --blue-border:#bfdbfe;
 
-  --amber:    #f59e0b;
-  --amber-l:  #fcd34d;
-  --amber-bg: rgba(245,158,11,0.12);
+  --crimson:   #dc2626;
+  --crimson-l: #ef4444;
+  --crimson-bg:#fef2f2;
+  --crimson-bd:#fecaca;
 
-  --rose:     #f43f5e;
-  --rose-l:   #fb7185;
-  --rose-bg:  rgba(244,63,94,0.12);
+  --amber:     #d97706;
+  --amber-l:   #f59e0b;
+  --amber-bg:  #fffbeb;
+  --amber-bd:  #fde68a;
 
-  --emerald:  #10b981;
-  --emerald-l:#34d399;
-  --emerald-bg:rgba(16,185,129,0.12);
+  --emerald:   #059669;
+  --emerald-l: #10b981;
+  --emerald-bg:#ecfdf5;
+  --emerald-bd:#a7f3d0;
 
-  --sky:      #0ea5e9;
-  --sky-l:    #38bdf8;
-  --sky-bg:   rgba(14,165,233,0.12);
+  --violet:    #7c3aed;
+  --violet-l:  #8b5cf6;
+  --violet-bg: #f5f3ff;
+  --violet-bd: #ddd6fe;
 
-  --violet:   #8b5cf6;
-  --violet-l: #a78bfa;
+  --sky:       #0284c7;
+  --sky-l:     #0ea5e9;
+  --sky-bg:    #e0f2fe;
+  --sky-bd:    #bae6fd;
 
-  --txt-hi:   #eef1ff;
-  --txt-main: #a8b4d8;
-  --txt-muted:#5a6a96;
-  --txt-faint:#2e3a5c;
+  --pink:      #db2777;
+  --pink-l:    #ec4899;
+  --pink-bg:   #fdf2f8;
+  --pink-bd:   #fbcfe8;
 
-  --border:   rgba(255,255,255,0.07);
-  --border-m: rgba(255,255,255,0.12);
-  --border-accent: rgba(99,102,241,0.25);
+  --orange:    #ea580c;
+  --orange-l:  #f97316;
+  --orange-bg: #fff7ed;
+  --orange-bd: #fed7aa;
 
-  --radius-sm:6px;
-  --radius-md:10px;
-  --radius-lg:14px;
-  --radius-xl:18px;
+  --txt-hi:    #0f172a;
+  --txt-main:  #334155;
+  --txt-muted: #64748b;
+  --txt-faint: #94a3b8;
+  --border:    #e2e8f0;
+  --border-m:  #cbd5e1;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.12);
 }
 
-*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 html { scroll-behavior:smooth; }
-
 body {
   font-family:'Plus Jakarta Sans',sans-serif;
-  background:var(--s950);
+  background:var(--page-bg);
   color:var(--txt-main);
   font-size:13px;
   line-height:1.5;
   min-height:100vh;
-  overflow-x:hidden;
 }
 
-/* ── Grid texture overlay ── */
-body::after {
-  content:'';
-  position:fixed; inset:0; pointer-events:none; z-index:0;
-  background:
-    radial-gradient(ellipse 60% 40% at 15% 10%, rgba(99,102,241,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 35% at 85% 80%, rgba(139,92,246,0.05) 0%, transparent 60%);
-}
-
-.app { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; }
-
-/* ═══ TOPBAR ═══ */
+/* ══ TOPBAR ══ */
 .topbar {
+  background:var(--topbar-bg);
   display:flex; align-items:center; justify-content:space-between;
-  padding:0 24px; height:58px; flex-shrink:0;
-  background:rgba(12,15,24,0.97);
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(16px);
-  position:sticky; top:0; z-index:200;
+  padding:0 24px; height:58px; position:sticky; top:0; z-index:200;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);
 }
-
 .brand { display:flex; align-items:center; gap:12px; }
 .brand-mark {
-  width:34px; height:34px; border-radius:10px; flex-shrink:0;
-  background:linear-gradient(135deg, var(--indigo), var(--violet));
+  width:36px; height:36px; border-radius:10px; flex-shrink:0;
+  background:linear-gradient(135deg,#60a5fa,#a78bfa);
   display:flex; align-items:center; justify-content:center;
-  box-shadow:0 0 20px rgba(99,102,241,0.3);
+  box-shadow:0 0 16px rgba(96,165,250,.4);
 }
-.brand-name {
-  font-size:15px; font-weight:800; color:var(--txt-hi);
-  letter-spacing:-0.4px; line-height:1.1;
-}
-.brand-sub { font-size:10px; color:var(--txt-muted); font-weight:500; }
-
-.topbar-mid {
-  display:flex; align-items:center; gap:6px;
-  background:var(--s850); border:1px solid var(--border);
-  border-radius:8px; padding:4px 8px;
-}
-.date-chip { font-size:11px; color:var(--txt-muted); font-family:'JetBrains Mono',monospace; }
-
+.brand-name { font-size:16px; font-weight:800; color:#fff; letter-spacing:-.4px; }
+.brand-sub  { font-size:10px; color:#94a3b8; }
 .topbar-right { display:flex; align-items:center; gap:8px; }
-
-/* ── Sync indicator ── */
-.sync-badge {
-  display:flex; align-items:center; gap:6px;
-  font-size:10px; color:var(--txt-muted); font-weight:500;
-  background:var(--s850); border:1px solid var(--border);
+.date-badge {
+  font-family:'JetBrains Mono',monospace; font-size:10px; color:#cbd5e1;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
   padding:4px 10px; border-radius:20px;
 }
-.sync-pulse {
-  width:6px; height:6px; border-radius:50%;
-  background:var(--emerald); animation:blink 2s infinite;
+.sync-badge {
+  display:flex; align-items:center; gap:6px;
+  font-size:10px; color:#94a3b8; font-weight:600;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
+  padding:4px 10px; border-radius:20px;
 }
-.sync-pulse.warn  { background:var(--amber); animation:none; }
-.sync-pulse.error { background:var(--rose);  animation:none; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.sync-dot { width:7px; height:7px; border-radius:50%; background:#4ade80; animation:blink 2s infinite; }
+.sync-dot.warn  { background:#fbbf24; animation:none; }
+.sync-dot.error { background:#f87171; animation:none; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.25} }
 
-/* ═══ BUTTONS ═══ */
+/* ══ BUTTONS ══ */
 .btn {
   display:inline-flex; align-items:center; gap:6px;
-  font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:12px; font-weight:600;
-  padding:7px 14px; border-radius:var(--radius-md); cursor:pointer;
-  border:1px solid var(--border-m);
-  background:rgba(255,255,255,0.05);
-  color:var(--txt-main); transition:all .15s ease;
-  white-space:nowrap; outline:none;
+  font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; font-weight:600;
+  padding:7px 15px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--border-m); background:rgba(255,255,255,.12);
+  color:#e2e8f0; transition:all .15s; white-space:nowrap; outline:none;
 }
-.btn:hover { background:rgba(255,255,255,0.10); color:var(--txt-hi); border-color:var(--border-m); }
+.btn:hover { background:rgba(255,255,255,.22); color:#fff; }
 .btn:active { transform:scale(.97); }
-.btn-indigo {
-  background:var(--indigo); color:#fff; border-color:var(--indigo);
-  box-shadow:0 0 16px rgba(99,102,241,.25);
+.btn-blue    { background:var(--blue); color:#fff; border-color:var(--blue); }
+.btn-blue:hover   { background:#1d4ed8; border-color:#1d4ed8; color:#fff; }
+.btn-crimson { background:var(--crimson); color:#fff; border-color:var(--crimson); }
+.btn-crimson:hover{ background:#b91c1c; border-color:#b91c1c; color:#fff; }
+.btn-amber   { background:var(--amber); color:#fff; border-color:var(--amber); }
+.btn-amber:hover  { background:#b45309; border-color:#b45309; color:#fff; }
+.btn-emerald { background:var(--emerald); color:#fff; border-color:var(--emerald); }
+.btn-emerald:hover{ background:#047857; border-color:#047857; color:#fff; }
+.btn-violet  { background:var(--violet); color:#fff; border-color:var(--violet); }
+.btn-violet:hover { background:#6d28d9; border-color:#6d28d9; color:#fff; }
+.btn-outline {
+  background:var(--card-bg); color:var(--txt-main); border-color:var(--border-m);
 }
-.btn-indigo:hover { background:var(--indigo-l); border-color:var(--indigo-l); color:#fff; }
-.btn-amber  { background:var(--amber); color:#1a0800; border-color:var(--amber); font-weight:700; }
-.btn-amber:hover  { background:var(--amber-l); border-color:var(--amber-l); }
-.btn-rose   { background:var(--rose); color:#fff; border-color:var(--rose); }
-.btn-rose:hover   { background:var(--rose-l); border-color:var(--rose-l); }
-.btn-ghost  { background:transparent; border-color:var(--border); color:var(--txt-muted); }
-.btn-ghost:hover  { background:rgba(255,255,255,.05); color:var(--txt-main); }
-.btn-sm  { font-size:11px; padding:5px 11px; border-radius:7px; }
-.btn-xs  { font-size:10px; padding:3px 8px; border-radius:6px; }
-.btn-emerald { background:var(--emerald); color:#002010; border-color:var(--emerald); font-weight:700; }
-.btn-emerald:hover { background:var(--emerald-l); }
+.btn-outline:hover { background:var(--card-bg2); border-color:var(--blue); color:var(--blue); }
+.btn-sm { font-size:11px; padding:5px 11px; border-radius:7px; }
+.btn-xs { font-size:10px; padding:3px 9px; border-radius:6px; }
 
-/* ═══ NAV ═══ */
+/* ══ NAV TABS ══ */
 .nav {
-  display:flex; padding:0 24px;
-  background:rgba(12,15,24,0.92);
-  border-bottom:1px solid var(--border);
-  overflow-x:auto; flex-shrink:0;
+  background:var(--nav-bg);
+  display:flex; padding:0 24px; overflow-x:auto;
+  border-bottom:3px solid rgba(255,255,255,.06);
 }
 .nav::-webkit-scrollbar { display:none; }
 .ntab {
-  font-size:12px; font-weight:600; padding:13px 18px;
-  cursor:pointer; color:var(--txt-muted);
-  border-bottom:2px solid transparent; white-space:nowrap;
-  transition:all .15s; user-select:none;
+  font-size:12px; font-weight:600; padding:12px 18px;
+  cursor:pointer; color:rgba(255,255,255,.5);
+  border-bottom:3px solid transparent; white-space:nowrap;
+  transition:all .15s; user-select:none; margin-bottom:-3px;
 }
-.ntab:hover { color:var(--txt-main); }
-.ntab.active { color:var(--indigo-l); border-bottom-color:var(--indigo-l); }
+.ntab:hover { color:rgba(255,255,255,.8); }
+.ntab.active { color:#fff; border-bottom-color:#60a5fa; }
 
-/* ═══ CONTENT ═══ */
-.content { padding:20px 24px; flex:1; }
+/* ══ CONTENT ══ */
+.content { padding:20px 24px; }
 .tab-pane { display:none; }
-.tab-pane.active { display:block; animation:fadeSlide .22s ease; }
-@keyframes fadeSlide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.tab-pane.active { display:block; animation:fadeUp .2s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
-/* ═══ SECTION HEADER ═══ */
-.sec-hdr {
-  display:flex; align-items:center; gap:10px; margin-bottom:16px;
-}
-.sec-hdr-line {
-  height:1px; flex:1; background:var(--border);
-}
-.sec-hdr-title {
-  font-size:10px; font-weight:700; text-transform:uppercase;
-  letter-spacing:1px; color:var(--txt-muted); white-space:nowrap;
-}
+/* ══ SECTION HEADER ══ */
+.sec-hdr { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+.sec-hdr-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--txt-muted); white-space:nowrap; }
+.sec-hdr-line  { height:1px; flex:1; background:var(--border); }
 
-/* ═══ METRIC CARDS ═══ */
-.kpi-grid {
+/* ══ KPI CARDS ══ */
+.kpi-row {
   display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(148px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
   gap:10px; margin-bottom:18px;
 }
 .kpi {
-  background:var(--s850); border:1px solid var(--border);
-  border-radius:var(--radius-lg); padding:14px 16px;
-  position:relative; overflow:hidden; transition:transform .18s, border-color .18s;
+  background:var(--card-bg); border-radius:12px; padding:14px 16px;
+  border:1px solid var(--border); box-shadow:var(--shadow-sm);
+  position:relative; overflow:hidden; transition:transform .18s,box-shadow .18s;
 }
-.kpi:hover { transform:translateY(-2px); border-color:var(--border-m); }
-/* Left accent bar */
-.kpi::before {
-  content:''; position:absolute; top:0; left:0; bottom:0; width:3px;
-  border-radius:var(--radius-lg) 0 0 var(--radius-lg);
+.kpi:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.kpi::after {
+  content:''; position:absolute; top:0; right:0;
+  width:60px; height:60px; border-radius:50%;
+  opacity:.07; transform:translate(20px,-20px);
 }
-.kpi.indigo::before  { background:var(--indigo); }
-.kpi.amber::before   { background:var(--amber); }
-.kpi.rose::before    { background:var(--rose); }
-.kpi.emerald::before { background:var(--emerald); }
-.kpi.sky::before     { background:var(--sky); }
-.kpi.violet::before  { background:var(--violet); }
+.kpi.blue   { border-top:3px solid var(--blue);    } .kpi.blue::after   { background:var(--blue); }
+.kpi.crimson{ border-top:3px solid var(--crimson); } .kpi.crimson::after{ background:var(--crimson); }
+.kpi.amber  { border-top:3px solid var(--amber);   } .kpi.amber::after  { background:var(--amber); }
+.kpi.emerald{ border-top:3px solid var(--emerald); } .kpi.emerald::after{ background:var(--emerald); }
+.kpi.violet { border-top:3px solid var(--violet);  } .kpi.violet::after { background:var(--violet); }
+.kpi.sky    { border-top:3px solid var(--sky);     } .kpi.sky::after    { background:var(--sky); }
+.kpi.pink   { border-top:3px solid var(--pink);    } .kpi.pink::after   { background:var(--pink); }
+.kpi.orange { border-top:3px solid var(--orange);  } .kpi.orange::after { background:var(--orange); }
 
-.kpi-label { font-size:10px; font-weight:600; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:6px; }
-.kpi-value { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:600; color:var(--txt-hi); line-height:1; }
+.kpi-label { font-size:10px; font-weight:700; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:6px; }
+.kpi-value { font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:700; color:var(--txt-hi); line-height:1; }
 .kpi-delta { font-size:10px; font-weight:600; margin-top:5px; }
-.d-up   { color:var(--rose-l); }
-.d-dn   { color:var(--emerald-l); }
-.d-neu  { color:var(--txt-muted); }
+.d-up { color:var(--crimson-l); } .d-dn { color:var(--emerald-l); } .d-neu { color:var(--txt-muted); }
 
-/* ═══ FILTER BAR ═══ */
+/* ══ FILTER BAR ══ */
 .fbar {
   display:flex; align-items:center; gap:8px; flex-wrap:wrap;
   margin-bottom:14px; padding:10px 14px;
-  background:var(--s850); border:1px solid var(--border);
-  border-radius:var(--radius-md);
+  background:var(--card-bg); border:1px solid var(--border);
+  border-radius:10px; box-shadow:var(--shadow-sm);
 }
 .fbar label { font-size:10px; font-weight:700; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.5px; }
 .fsel {
   font-family:'Plus Jakarta Sans',sans-serif;
   font-size:11px; font-weight:500; padding:5px 10px;
   border-radius:7px; border:1px solid var(--border-m);
-  background:var(--s800); color:var(--txt-main);
-  cursor:pointer; transition:border-color .15s;
+  background:var(--card-bg2); color:var(--txt-main); cursor:pointer;
+  transition:border-color .15s;
 }
-.fsel:focus { outline:none; border-color:var(--indigo); }
-.fsel option { background:var(--s850); }
+.fsel:focus { outline:none; border-color:var(--blue); }
 
-/* ── Subnav pills ── */
+/* ══ SUB-NAV ══ */
 .snav { display:flex; gap:4px; flex-wrap:wrap; }
 .snb {
-  font-family:'Plus Jakarta Sans',sans-serif;
   font-size:11px; font-weight:600; padding:4px 12px;
   border-radius:7px; border:1px solid var(--border-m);
-  color:var(--txt-muted); cursor:pointer; background:transparent;
-  transition:all .13s;
+  color:var(--txt-muted); cursor:pointer; background:var(--card-bg);
+  transition:all .13s; font-family:'Plus Jakarta Sans',sans-serif;
 }
-.snb:hover { background:rgba(255,255,255,.06); color:var(--txt-main); }
-.snb.active { background:var(--indigo-bg); border-color:var(--indigo); color:var(--indigo-l); }
+.snb:hover { background:var(--blue-bg); color:var(--blue); border-color:var(--blue-border); }
+.snb.active { background:var(--blue); color:#fff; border-color:var(--blue); box-shadow:0 2px 8px rgba(37,99,235,.3); }
 
-/* ═══ TABLE PANEL ═══ */
+/* ══ TABLE PANEL ══ */
 .tpanel {
-  background:var(--s900); border:1px solid var(--border);
-  border-radius:var(--radius-lg); overflow:hidden; margin-bottom:18px;
+  background:var(--card-bg); border:1px solid var(--border);
+  border-radius:12px; overflow:hidden; margin-bottom:18px;
+  box-shadow:var(--shadow-sm);
 }
 .tpanel-head {
   display:flex; align-items:center; justify-content:space-between;
   padding:12px 18px; border-bottom:1px solid var(--border);
-  background:rgba(255,255,255,0.02); flex-wrap:wrap; gap:10px;
+  background:linear-gradient(90deg,var(--blue-bg),var(--card-bg));
+  flex-wrap:wrap; gap:10px;
 }
 .tpanel-title { font-size:13px; font-weight:700; color:var(--txt-hi); }
 .tpanel-sub   { font-size:10px; color:var(--txt-muted); margin-top:1px; }
 .tpanel-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-.search-box {
-  font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:11px; padding:6px 12px; border-radius:8px;
-  border:1px solid var(--border-m);
-  background:var(--s800); color:var(--txt-main); width:190px;
+.srch-box {
+  font-family:'Plus Jakarta Sans',sans-serif; font-size:11px;
+  padding:6px 12px; border-radius:8px; border:1px solid var(--border-m);
+  background:var(--card-bg2); color:var(--txt-main); width:180px;
 }
-.search-box::placeholder { color:var(--txt-faint); }
-.search-box:focus { outline:none; border-color:var(--indigo); }
+.srch-box::placeholder { color:var(--txt-faint); }
+.srch-box:focus { outline:none; border-color:var(--blue); }
 
 .tscroll { overflow-x:auto; }
-.tscroll::-webkit-scrollbar { height:3px; }
-.tscroll::-webkit-scrollbar-thumb { background:var(--s600); border-radius:2px; }
+.tscroll::-webkit-scrollbar { height:4px; }
+.tscroll::-webkit-scrollbar-thumb { background:var(--border-m); border-radius:2px; }
 
 table { width:100%; border-collapse:collapse; font-size:11px; table-layout:fixed; }
 thead th {
-  font-family:'JetBrains Mono',monospace;
-  font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:1px;
-  color:var(--txt-muted); text-align:left;
-  padding:8px 12px; border-bottom:1px solid var(--border);
-  background:rgba(255,255,255,0.025); white-space:nowrap;
+  font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.9px;
+  color:var(--txt-muted); text-align:left; padding:8px 12px;
+  border-bottom:2px solid var(--border); background:var(--card-bg2); white-space:nowrap;
 }
-tbody tr { border-bottom:1px solid rgba(255,255,255,0.04); transition:background .1s; cursor:pointer; }
-tbody tr:hover { background:rgba(99,102,241,0.05); }
+tbody tr { border-bottom:1px solid var(--border); transition:background .1s; cursor:pointer; }
+tbody tr:hover { background:#f1f5ff; }
 tbody tr:last-child { border-bottom:none; }
 tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+tbody tr:nth-child(even) { background:#fafbff; }
+tbody tr:nth-child(even):hover { background:#f1f5ff; }
 
-/* ── Rank badge ── */
+/* ══ RANK BADGE ══ */
 .rbadge {
   display:inline-flex; align-items:center; justify-content:center;
   width:22px; height:22px; border-radius:50%;
-  font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:600;
+  font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700;
 }
-.rb-r  { background:var(--rose-bg);    color:var(--rose-l);    border:1px solid rgba(244,63,94,.3); }
-.rb-a  { background:var(--amber-bg);   color:var(--amber-l);   border:1px solid rgba(245,158,11,.3); }
-.rb-g  { background:var(--emerald-bg); color:var(--emerald-l); border:1px solid rgba(16,185,129,.3); }
+.rb-r { background:var(--crimson-bg); color:var(--crimson); border:1.5px solid var(--crimson-bd); }
+.rb-a { background:var(--amber-bg);   color:var(--amber);   border:1.5px solid var(--amber-bd);   }
+.rb-g { background:var(--emerald-bg); color:var(--emerald); border:1.5px solid var(--emerald-bd); }
 
-/* ── Pills ── */
-.pill {
-  display:inline-block; font-size:9px; font-weight:700;
-  padding:2px 8px; border-radius:99px; letter-spacing:.3px;
-}
-.p-rose    { background:var(--rose-bg);    color:var(--rose-l);    border:1px solid rgba(244,63,94,.3); }
-.p-amber   { background:var(--amber-bg);   color:var(--amber-l);   border:1px solid rgba(245,158,11,.3); }
-.p-emerald { background:var(--emerald-bg); color:var(--emerald-l); border:1px solid rgba(16,185,129,.3); }
-.p-indigo  { background:var(--indigo-bg);  color:var(--indigo-l);  border:1px solid rgba(99,102,241,.3); }
-.p-sky     { background:var(--sky-bg);     color:var(--sky-l);     border:1px solid rgba(14,165,233,.3); }
-.p-violet  { background:rgba(139,92,246,.12); color:var(--violet-l); border:1px solid rgba(139,92,246,.3); }
-.p-live    { background:var(--rose); color:#fff; border:none; }
+/* ══ PILLS ══ */
+.pill { display:inline-block; font-size:9px; font-weight:700; padding:2px 8px; border-radius:99px; letter-spacing:.3px; }
+.p-blue    { background:var(--blue-bg);    color:var(--blue);    border:1px solid var(--blue-border); }
+.p-crimson { background:var(--crimson-bg); color:var(--crimson); border:1px solid var(--crimson-bd);  }
+.p-amber   { background:var(--amber-bg);   color:var(--amber);   border:1px solid var(--amber-bd);    }
+.p-emerald { background:var(--emerald-bg); color:var(--emerald); border:1px solid var(--emerald-bd);  }
+.p-violet  { background:var(--violet-bg);  color:var(--violet);  border:1px solid var(--violet-bd);   }
+.p-sky     { background:var(--sky-bg);     color:var(--sky);     border:1px solid var(--sky-bd);      }
+.p-pink    { background:var(--pink-bg);    color:var(--pink);    border:1px solid var(--pink-bd);     }
+.p-orange  { background:var(--orange-bg);  color:var(--orange);  border:1px solid var(--orange-bd);   }
 
-/* ── Score bar ── */
-.sbar-wrap { height:3px; border-radius:99px; background:rgba(255,255,255,.06); margin-top:3px; }
-.sbar      { height:3px; border-radius:99px; transition:width .4s ease; }
+/* ══ SCORE BAR ══ */
+.sbar-wrap { height:4px; border-radius:99px; background:var(--border); margin-top:3px; }
+.sbar      { height:4px; border-radius:99px; transition:width .4s ease; }
 
-/* ═══ PANEL CARDS ═══ */
-.pcard {
-  background:var(--s900); border:1px solid var(--border);
-  border-radius:var(--radius-lg); overflow:hidden; margin-bottom:16px;
-}
-.pcard-head {
-  padding:11px 16px; border-bottom:1px solid var(--border);
-  display:flex; justify-content:space-between; align-items:center;
-  background:rgba(255,255,255,.02);
-}
+/* ══ PANEL CARD ══ */
+.pcard { background:var(--card-bg); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:16px; box-shadow:var(--shadow-sm); }
+.pcard-head { padding:11px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:var(--card-bg2); }
 .pcard-title { font-size:12px; font-weight:700; color:var(--txt-hi); }
 .pcard-body  { padding:14px 16px; }
-
 .twocol { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:14px; margin-bottom:16px; }
 
-/* ── Fraud rows ── */
-.frow {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:6px 0; border-bottom:1px solid rgba(255,255,255,.04);
-}
+/* ══ FRAUD ROWS ══ */
+.frow { display:flex; align-items:center; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); }
 .frow:last-child { border-bottom:none; }
-.frow-name { font-size:11px; color:var(--txt-main); flex:1; padding-right:12px; }
-.frow-bar-bg  { width:80px; height:3px; border-radius:99px; background:rgba(255,255,255,.06); flex-shrink:0; }
-.frow-bar-fill{ height:3px; border-radius:99px; background:linear-gradient(90deg,var(--rose),var(--rose-l)); }
-.frow-count { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:var(--rose-l); min-width:36px; text-align:right; }
+.frow-name   { font-size:11px; color:var(--txt-main); flex:1; padding-right:12px; }
+.frow-bar-bg { width:80px; height:4px; border-radius:99px; background:var(--border); flex-shrink:0; }
+.frow-bar-fill { height:4px; border-radius:99px; background:linear-gradient(90deg,var(--crimson),#f87171); }
+.frow-count  { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--crimson); min-width:36px; text-align:right; }
 
-/* ═══ DOWNLOAD ROW ═══ */
+/* ══ DL ROW ══ */
 .dlrow { display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
 .dlrow span { font-size:11px; color:var(--txt-muted); font-weight:600; }
 
-/* ═══ RULES BAR ═══ */
+/* ══ RULES BAR ══ */
 .rules-bar {
   display:flex; align-items:center; justify-content:space-between;
   padding:10px 16px; flex-wrap:wrap; gap:10px;
-  background:linear-gradient(90deg, rgba(99,102,241,0.08), rgba(139,92,246,0.05));
-  border:1px solid var(--border-accent);
-  border-radius:var(--radius-md); margin-bottom:16px;
+  background:linear-gradient(135deg,var(--blue-bg),var(--violet-bg));
+  border:1px solid var(--blue-border); border-radius:10px; margin-bottom:16px;
+  box-shadow:var(--shadow-sm);
 }
 .rules-bar-left { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.rules-bar-lbl { font-size:10px; font-weight:700; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.5px; }
+.rules-bar-lbl  { font-size:10px; font-weight:700; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.5px; }
 .active-pills-row { display:flex; gap:5px; flex-wrap:wrap; }
 
-/* ═══ GATE ═══ */
+/* ══ GATE ══ */
 .gate-wrap {
-  display:none; align-items:center; justify-content:center;
-  min-height:320px;
-  background:rgba(8,10,18,.88);
-  border:1px solid var(--border-accent);
-  border-radius:var(--radius-lg); margin-bottom:16px;
-  backdrop-filter:blur(12px);
+  display:none; align-items:center; justify-content:center; min-height:300px;
+  background:rgba(15,23,42,.5); border:1px solid var(--blue-border);
+  border-radius:14px; margin-bottom:16px; backdrop-filter:blur(8px);
 }
 .gate-box {
-  background:var(--s800); border:1px solid rgba(99,102,241,.3);
-  border-radius:var(--radius-xl); padding:32px 36px; width:370px;
-  position:relative; overflow:hidden;
+  background:var(--card-bg); border:2px solid var(--blue);
+  border-radius:16px; padding:30px 34px; width:370px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-lg);
 }
 .gate-box::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:3px;
-  background:linear-gradient(90deg, var(--indigo), var(--violet), var(--sky));
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg,var(--blue),var(--violet),var(--sky));
 }
-.gate-title {
-  font-size:17px; font-weight:800; color:var(--txt-hi);
-  display:flex; align-items:center; gap:10px; margin-bottom:4px;
-}
+.gate-title { font-size:17px; font-weight:800; color:var(--txt-hi); display:flex; align-items:center; gap:10px; margin-bottom:4px; }
 .gate-sub { font-size:12px; color:var(--txt-muted); margin-bottom:22px; }
 .gate-label { font-size:10px; font-weight:700; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; display:block; }
 .gate-inp {
   width:100%; font-family:'JetBrains Mono',monospace; font-size:12px;
-  padding:9px 12px; border-radius:var(--radius-md);
-  border:1px solid var(--border-m);
-  background:var(--s900); color:var(--txt-hi); margin-bottom:12px;
-  transition:border-color .15s;
+  padding:9px 12px; border-radius:8px; border:1.5px solid var(--border-m);
+  background:var(--card-bg2); color:var(--txt-hi); margin-bottom:12px; transition:border-color .15s;
 }
-.gate-inp:focus { outline:none; border-color:var(--indigo); }
-.gate-err {
-  font-size:11px; background:var(--rose-bg); color:var(--rose-l);
-  border:1px solid rgba(244,63,94,.3); border-radius:8px;
-  padding:8px 12px; margin-top:10px; display:none;
-}
-.gate-hint {
-  margin-top:14px; font-size:10px; color:var(--txt-faint);
-  font-family:'JetBrains Mono',monospace;
-  background:rgba(255,255,255,.03); border-radius:8px; padding:8px 12px;
-}
+.gate-inp:focus { outline:none; border-color:var(--blue); }
+.gate-err { font-size:11px; background:var(--crimson-bg); color:var(--crimson); border:1px solid var(--crimson-bd); border-radius:8px; padding:8px 12px; margin-top:10px; display:none; }
+.gate-hint { margin-top:14px; font-size:10px; color:var(--txt-faint); background:var(--card-bg2); border-radius:8px; padding:8px 12px; font-family:'JetBrains Mono',monospace; border:1px solid var(--border); }
 
-/* ═══ RULE EDITOR ═══ */
-.reditor {
-  background:var(--s900); border:1px solid var(--border-accent);
-  border-radius:var(--radius-lg); overflow:hidden; margin-bottom:16px; display:none;
-}
+/* ══ RULE EDITOR ══ */
+.reditor { background:var(--card-bg); border:2px solid var(--blue); border-radius:14px; overflow:hidden; margin-bottom:16px; display:none; box-shadow:var(--shadow-md); }
 .reditor-head {
   padding:12px 18px; display:flex; align-items:center; justify-content:space-between;
-  background:linear-gradient(90deg, rgba(99,102,241,.10), rgba(139,92,246,.06));
-  border-bottom:1px solid var(--border-accent);
+  background:linear-gradient(90deg,var(--blue-bg),var(--violet-bg)); border-bottom:1px solid var(--blue-border);
 }
-.reditor-title { font-size:13px; font-weight:800; color:var(--indigo-l); display:flex; align-items:center; gap:8px; }
+.reditor-title { font-size:13px; font-weight:800; color:var(--blue); display:flex; align-items:center; gap:8px; }
 .reditor-body  { padding:20px; }
-.admin-tag { font-size:9px; font-weight:700; background:rgba(99,102,241,.15); color:var(--indigo-l); border:1px solid rgba(99,102,241,.3); padding:2px 8px; border-radius:99px; }
+.admin-tag { font-size:9px; font-weight:700; background:var(--blue); color:#fff; padding:2px 8px; border-radius:99px; }
 
-/* ── Weights ── */
+/* ══ WEIGHTS ══ */
 .w-row {
   display:flex; align-items:center; gap:14px; flex-wrap:wrap;
-  padding:14px 16px; background:rgba(255,255,255,.025);
-  border-radius:var(--radius-md); margin-bottom:12px;
+  padding:14px 16px; background:var(--card-bg2); border-radius:10px; margin-bottom:12px;
+  border:1px solid var(--border);
 }
 .w-item { display:flex; flex-direction:column; align-items:center; gap:6px; }
 .w-lbl { font-size:9px; font-weight:700; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.6px; }
-.w-inp {
-  width:70px; font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700;
-  text-align:center; padding:6px 4px;
-  border:1px solid var(--border-m); border-radius:var(--radius-md);
-  background:var(--s900); color:var(--indigo-l);
-}
-.w-inp:focus { outline:none; border-color:var(--indigo); }
+.w-inp { width:72px; font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:800; text-align:center; padding:6px 4px; border:2px solid var(--blue-border); border-radius:8px; background:var(--card-bg); color:var(--blue); }
+.w-inp:focus { outline:none; border-color:var(--blue); }
 .w-sep { font-size:18px; color:var(--txt-faint); }
 .w-total-val { font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:800; }
 
-/* ── Rule cards ── */
-.rcard {
-  background:rgba(255,255,255,.025); border:1px solid var(--border);
-  border-radius:var(--radius-md); padding:12px 14px; margin-bottom:8px;
-  transition:border-color .15s;
-}
-.rcard:hover { border-color:var(--border-m); }
+/* ══ RULE CARDS ══ */
+.rcard { background:var(--card-bg2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:8px; transition:border-color .15s; }
+.rcard:hover { border-color:var(--blue-border); box-shadow:var(--shadow-sm); }
 .rcard-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:6px; }
 .rcard-name { font-size:12px; font-weight:700; color:var(--txt-hi); }
 .rcard-actions { display:flex; gap:5px; }
@@ -455,127 +386,97 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
 .rf-lbl { font-size:9px; font-weight:700; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:2px; }
 .rf-val { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--txt-main); }
 
-/* ── Add rule btn ── */
+/* ══ ADD RULE ══ */
 .add-rule-btn {
-  width:100%; padding:11px; border:1px dashed rgba(99,102,241,.3);
-  border-radius:var(--radius-md); background:transparent;
-  color:var(--txt-muted); font-size:12px; font-weight:600;
-  cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif;
-  transition:all .15s;
+  width:100%; padding:11px; border:2px dashed var(--blue-border); border-radius:10px;
+  background:transparent; color:var(--blue); font-size:12px; font-weight:700;
+  cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; transition:all .15s;
 }
-.add-rule-btn:hover { background:var(--indigo-bg); border-color:var(--indigo); color:var(--indigo-l); }
+.add-rule-btn:hover { background:var(--blue-bg); border-color:var(--blue); }
 
-/* ── Rule form ── */
-.rform {
-  background:rgba(22,27,46,.6); border:1px solid var(--border-m);
-  border-radius:var(--radius-lg); padding:18px; margin-bottom:14px; display:none;
-}
-.rform-title { font-size:13px; font-weight:700; color:var(--txt-hi); margin-bottom:14px; }
+/* ══ RULE FORM ══ */
+.rform { background:var(--blue-bg); border:1px solid var(--blue-border); border-radius:12px; padding:18px; margin-bottom:14px; display:none; }
+.rform-title { font-size:13px; font-weight:800; color:var(--txt-hi); margin-bottom:14px; }
 .rform-grid  { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
 .rfl-row { display:flex; flex-direction:column; gap:4px; }
 .rfl { font-size:9px; font-weight:700; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.5px; }
-.rfi {
-  font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; padding:7px 10px;
-  border-radius:7px; border:1px solid var(--border-m);
-  background:var(--s900); color:var(--txt-main);
-}
-.rfi:focus { outline:none; border-color:var(--indigo); }
-.rfi option { background:var(--s850); }
-.rform-hint {
-  font-size:10px; color:var(--txt-muted); line-height:1.7;
-  background:rgba(99,102,241,.06); border:1px solid rgba(99,102,241,.12);
-  border-radius:8px; padding:10px 12px; margin-bottom:12px;
-}
-.save-msg { font-size:10px; font-weight:600; color:var(--emerald-l); margin-left:10px; display:none; }
+.rfi { font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; padding:7px 10px; border-radius:7px; border:1.5px solid var(--border-m); background:var(--card-bg); color:var(--txt-main); }
+.rfi:focus { outline:none; border-color:var(--blue); }
+.rform-hint { font-size:10px; color:var(--txt-muted); line-height:1.7; background:var(--card-bg); border:1px solid var(--blue-border); border-radius:8px; padding:10px 12px; margin-bottom:12px; }
+.save-msg { font-size:10px; font-weight:700; color:var(--emerald); margin-left:10px; display:none; }
 
-/* ═══ TREND ═══ */
-.trend-ctrl {
-  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-  margin-bottom:16px; padding:10px 14px;
-  background:var(--s850); border:1px solid var(--border); border-radius:var(--radius-md);
-}
+/* ══ TREND ══ */
+.trend-ctrl { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; padding:10px 14px; background:var(--card-bg); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow-sm); }
 .trend-ctrl label { font-size:10px; font-weight:700; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.5px; }
 .tlegend { display:flex; flex-wrap:wrap; gap:14px; margin-bottom:12px; }
-.tleg-item { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--txt-muted); }
+.tleg-item { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--txt-muted); font-weight:500; }
 .tleg-dot  { width:12px; height:3px; border-radius:2px; display:inline-block; }
 
-/* ═══ UPLOAD ═══ */
-.ugrid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
+/* ══ UPLOAD ══ */
+.ugrid { display:grid; grid-template-columns:1fr; gap:14px; margin-bottom:18px; }
 .ulabel { font-size:12px; font-weight:700; color:var(--txt-main); margin-bottom:8px; }
 .udrop {
-  border:1px dashed rgba(99,102,241,.25); border-radius:var(--radius-lg);
-  padding:24px; text-align:center; cursor:pointer; transition:all .2s;
-  background:rgba(99,102,241,.03);
+  border:2px dashed var(--blue-border); border-radius:14px;
+  padding:28px; text-align:center; cursor:pointer; transition:all .2s;
+  background:var(--blue-bg);
 }
-.udrop:hover { background:rgba(99,102,241,.07); border-color:var(--indigo); }
-.udrop.drag-over { background:rgba(99,102,241,.1); border-color:var(--indigo-l); }
-.udrop-icon { margin-bottom:8px; opacity:.45; }
-.udrop-text { font-size:12px; color:var(--txt-muted); font-weight:600; }
-.udrop-sub  { font-size:10px; color:var(--txt-faint); margin-top:4px; line-height:1.6; font-family:'JetBrains Mono',monospace; }
-.ustatus { font-size:10px; margin-top:6px; min-height:16px; color:var(--txt-muted); font-weight:600; }
-.ustatus.ok  { color:var(--emerald-l); }
-.ustatus.err { color:var(--rose-l); }
+.udrop:hover, .udrop.drag-over { background:#dbeafe; border-color:var(--blue); box-shadow:var(--shadow-md); }
+.udrop-icon { margin-bottom:10px; }
+.udrop-text { font-size:14px; font-weight:700; color:var(--blue); }
+.udrop-sub  { font-size:10px; color:var(--txt-muted); margin-top:6px; line-height:1.7; font-family:'JetBrains Mono',monospace; }
+.ustatus { font-size:11px; margin-top:8px; min-height:16px; color:var(--txt-muted); font-weight:600; }
+.ustatus.ok  { color:var(--emerald); }
+.ustatus.err { color:var(--crimson); }
 
-.hist-row {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:7px 0; border-bottom:1px solid rgba(255,255,255,.04);
-}
+.hist-row { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); }
 .hist-row:last-child { border-bottom:none; }
 
-/* ═══ TOAST ═══ */
+/* ══ PROGRESS ══ */
+#parse-progress {
+  display:none; background:var(--blue-bg); border:1px solid var(--blue-border);
+  border-radius:10px; padding:14px 16px; margin-bottom:14px;
+}
+.prog-bar-bg { height:8px; background:var(--border); border-radius:99px; margin-top:8px; overflow:hidden; }
+.prog-bar-fill { height:8px; background:linear-gradient(90deg,var(--blue),var(--violet)); border-radius:99px; transition:width .3s ease; }
+
+/* ══ TOAST ══ */
 #toast {
   position:fixed; bottom:22px; right:22px; z-index:9999;
-  padding:12px 18px; border-radius:var(--radius-md);
-  font-size:12px; font-weight:600;
-  background:var(--s750); color:var(--txt-hi); border:1px solid var(--border-m);
-  transform:translateY(70px); opacity:0; transition:all .28s ease; max-width:320px;
+  padding:12px 20px; border-radius:10px; font-size:12px; font-weight:700;
+  background:var(--txt-hi); color:#fff; box-shadow:var(--shadow-lg);
+  transform:translateY(70px); opacity:0; transition:all .28s ease; max-width:340px;
 }
 #toast.show  { transform:translateY(0); opacity:1; }
-#toast.ok    { border-color:rgba(16,185,129,.4); background:rgba(16,185,129,.15); color:var(--emerald-l); }
-#toast.err   { border-color:rgba(244,63,94,.4);  background:rgba(244,63,94,.12);  color:var(--rose-l); }
-#toast.warn  { border-color:rgba(245,158,11,.4); background:rgba(245,158,11,.12); color:var(--amber-l); }
+#toast.ok    { background:var(--emerald); }
+#toast.err   { background:var(--crimson); }
+#toast.warn  { background:var(--amber); color:var(--txt-hi); }
 
-/* ═══ LOADER ═══ */
+/* ══ LOADER ══ */
 #gloader {
   position:fixed; inset:0; z-index:9998;
-  background:rgba(8,10,18,.95);
+  background:rgba(255,255,255,.92);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:18px; backdrop-filter:blur(6px); transition:opacity .3s;
+  gap:16px; backdrop-filter:blur(4px); transition:opacity .3s;
 }
 #gloader.gone { opacity:0; pointer-events:none; }
-.lring {
-  width:46px; height:46px; border-radius:50%;
-  border:3px solid rgba(99,102,241,.15);
-  border-top-color:var(--indigo-l); animation:spin .85s linear infinite;
-}
-.ltext { font-size:13px; font-weight:600; color:var(--txt-muted); font-family:'JetBrains Mono',monospace; }
+.lring { width:46px; height:46px; border-radius:50%; border:3px solid var(--blue-border); border-top-color:var(--blue); animation:spin .85s linear infinite; }
+.ltext { font-size:13px; font-weight:700; color:var(--txt-muted); font-family:'JetBrains Mono',monospace; }
 @keyframes spin { to{transform:rotate(360deg)} }
 
-/* ═══ SETUP BANNER ═══ */
-#setup-banner {
-  display:none; background:linear-gradient(135deg, rgba(245,158,11,.1), rgba(244,63,94,.07));
-  border:1px solid rgba(245,158,11,.3); border-radius:var(--radius-md);
-  padding:14px 18px; margin-bottom:18px;
-}
-.setup-title { font-size:13px; font-weight:800; color:var(--amber-l); margin-bottom:6px; }
+/* ══ SETUP BANNER ══ */
+#setup-banner { display:none; background:var(--amber-bg); border:1px solid var(--amber-bd); border-radius:10px; padding:14px 18px; margin-bottom:18px; }
+.setup-title { font-size:13px; font-weight:800; color:var(--amber); margin-bottom:6px; }
 .setup-steps { font-size:11px; color:var(--txt-muted); line-height:1.9; }
-.setup-steps code { font-family:'JetBrains Mono',monospace; background:rgba(255,255,255,.08); padding:1px 6px; border-radius:4px; color:var(--indigo-l); font-size:10px; }
+.setup-steps code { font-family:'JetBrains Mono',monospace; background:rgba(255,255,255,.8); padding:1px 6px; border-radius:4px; color:var(--blue); font-size:10px; }
 
-/* ═══ PROGRESS BAR ═══ */
-#parse-progress {
-  display:none; background:rgba(99,102,241,.08); border:1px solid var(--border-accent);
-  border-radius:var(--radius-md); padding:12px 16px; margin-bottom:14px;
-}
-.prog-bar-bg { height:6px; background:rgba(255,255,255,.06); border-radius:99px; margin-top:8px; }
-.prog-bar-fill { height:6px; background:linear-gradient(90deg,var(--indigo),var(--violet)); border-radius:99px; transition:width .3s ease; }
+/* ══ SCHEMA BOX ══ */
+.schema-box { background:var(--card-bg2); border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin-top:16px; }
+.schema-box-title { font-size:10px; font-weight:700; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.8px; margin-bottom:10px; }
 
-/* ═══ ZB WRAP ═══ */
+/* ══ MISC ══ */
 #zb-wrap { display:none; }
-
-/* ═══ RESPONSIVE ═══ */
-@media(max-width:640px){
+@media(max-width:640px) {
   .twocol{grid-template-columns:1fr}
-  .ugrid{grid-template-columns:1fr}
   .rform-grid{grid-template-columns:1fr}
   .rcard-grid{grid-template-columns:1fr 1fr}
   .topbar{padding:0 14px}
@@ -586,12 +487,10 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
 </head>
 <body>
 
-<div id="gloader"><div class="lring"></div><div class="ltext" id="ltext">Initialising dashboard…</div></div>
+<div id="gloader"><div class="lring"></div><div class="ltext" id="ltext">Initialising…</div></div>
 <div id="toast"></div>
 
-<div class="app">
-
-<!-- ═══ TOPBAR ═══ -->
+<!-- ══ TOPBAR ══ -->
 <div class="topbar">
   <div class="brand">
     <div class="brand-mark">
@@ -602,61 +501,47 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
     </div>
     <div>
       <div class="brand-name">Hub Loss Scorecard</div>
-      <div class="brand-sub" id="topbar-sub">Loading…</div>
+      <div class="brand-sub" id="topbar-sub">Upload CSV to begin</div>
     </div>
   </div>
-  <div class="topbar-mid">
-    <span class="date-chip" id="date-range-chip">—</span>
-  </div>
-  <div class="topbar-right">
-    <div class="sync-badge">
-      <div class="sync-pulse" id="sync-dot"></div>
-      <span id="sync-lbl">Connecting…</span>
-    </div>
-    <button class="btn btn-ghost btn-sm" onclick="refreshAll()">
-      <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M13.5 8A5.5 5.5 0 012.5 8M2.5 8V4.5M2.5 4.5H6M13.5 8V11.5M13.5 11.5H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      Refresh
-    </button>
-    <input type="file" id="topCSV" accept=".csv" style="display:none" onchange="quickUpload(event)">
-    <button class="btn btn-sm" onclick="document.getElementById('topCSV').click()">↑ Upload CSV</button>
-    <button class="btn btn-indigo btn-sm" onclick="dlReport()">↓ Weekly Report</button>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="date-badge" id="date-chip">—</span>
+    <div class="sync-badge"><div class="sync-dot" id="sync-dot"></div><span id="sync-lbl">Connecting…</span></div>
+    <button class="btn btn-sm" onclick="document.getElementById('top-csv').click()">↑ Upload CSV</button>
+    <input type="file" id="top-csv" accept=".csv" style="display:none" onchange="handleCSV(event,'top-st')">
+    <div id="top-st" style="font-size:11px;color:#94a3b8;font-weight:600;max-width:200px"></div>
+    <button class="btn btn-blue btn-sm" onclick="dlReport()">↓ Weekly Report</button>
   </div>
 </div>
 
-<!-- ═══ NAV ═══ -->
+<!-- ══ NAV ══ -->
 <div class="nav">
-  <div class="ntab active"   onclick="sw('pendency',this)">Live Pendency</div>
-  <div class="ntab"          onclick="sw('rto',this)">RTO &amp; RVP Loss</div>
-  <div class="ntab"          onclick="sw('fraud',this)">Fraud Buckets</div>
-  <div class="ntab"          onclick="sw('scorecard',this)">Hub Scorecard</div>
-  <div class="ntab"          onclick="sw('trend',this)">Trend Analysis</div>
-  <div class="ntab"          onclick="sw('upload',this)">Data Upload</div>
+  <div class="ntab active" onclick="sw('pendency',this)">Live Pendency</div>
+  <div class="ntab" onclick="sw('rto',this)">RTO &amp; RVP Loss</div>
+  <div class="ntab" onclick="sw('fraud',this)">Fraud Buckets</div>
+  <div class="ntab" onclick="sw('scorecard',this)">Hub Scorecard</div>
+  <div class="ntab" onclick="sw('trend',this)">Trend Analysis</div>
+  <div class="ntab" onclick="sw('upload',this)">Data Upload</div>
 </div>
 
 <div class="content">
 
-<!-- ═══════════════════════════════════════
-     TAB 1 · LIVE PENDENCY
-═══════════════════════════════════════ -->
+<!-- ══════════════════════ TAB 1 · LIVE PENDENCY ══════════════════════ -->
 <div class="tab-pane active" id="tab-pendency">
 
   <div id="setup-banner">
-    <div class="setup-title">⚡ Connect Google Sheets to persist data</div>
-    <div class="setup-steps">
-      1. Open <code>google_apps_script.gs</code> → paste into Google Sheet Apps Script → replace <code>YOUR_SHEET_ID_HERE</code><br>
-      2. Deploy as Web App → copy URL<br>
-      3. Replace <code>YOUR_APPS_SCRIPT_URL_HERE</code> at the top of this file and reload
-    </div>
+    <div class="setup-title">⚡ Connect Google Sheets — just paste your Web App URL</div>
+    <div class="setup-steps">Already configured: <code>AKfycbxDte4YFL3mU…</code> ← URL is set. Upload your CSV below to start.</div>
   </div>
 
-  <div class="kpi-grid" id="p-kpis">
-    <div class="kpi rose">  <div class="kpi-label">CB 10+</div>        <div class="kpi-value" id="kp-cb">—</div>     <div class="kpi-delta d-up" id="kp-cb-n">—</div></div>
-    <div class="kpi indigo"><div class="kpi-label">LM-ODC Short</div>  <div class="kpi-value" id="kp-odc">—</div>    <div class="kpi-delta d-up" id="kp-odc-n">—</div></div>
-    <div class="kpi violet"><div class="kpi-label">Intransit 10+</div> <div class="kpi-value" id="kp-it">—</div>     <div class="kpi-delta d-up" id="kp-it-n">—</div></div>
-    <div class="kpi amber"> <div class="kpi-label">Fwd High 5+</div>   <div class="kpi-value" id="kp-fh">—</div>     <div class="kpi-delta d-up" id="kp-fh-n">—</div></div>
-    <div class="kpi sky">   <div class="kpi-label">Fwd Short</div>     <div class="kpi-value" id="kp-fs">—</div>     <div class="kpi-delta d-up" id="kp-fs-n">—</div></div>
-    <div class="kpi emerald"><div class="kpi-label">RVP Short</div>    <div class="kpi-value" id="kp-rs">—</div>     <div class="kpi-delta d-up" id="kp-rs-n">—</div></div>
-    <div class="kpi rose">  <div class="kpi-label">Total Rows</div>    <div class="kpi-value" id="kp-total">—</div>  <div class="kpi-delta d-neu">loaded</div></div>
+  <div class="kpi-row" id="p-kpis">
+    <div class="kpi crimson"><div class="kpi-label">CB 10+</div>        <div class="kpi-value" id="kp-cb">0</div>    <div class="kpi-delta d-up" id="kp-cb-n">—</div></div>
+    <div class="kpi blue">  <div class="kpi-label">LM-ODC Short</div>  <div class="kpi-value" id="kp-odc">0</div>   <div class="kpi-delta d-up">LM to ODC Short</div></div>
+    <div class="kpi violet"><div class="kpi-label">Intransit 10+</div> <div class="kpi-value" id="kp-it">0</div>    <div class="kpi-delta d-up">LH Bag Miss</div></div>
+    <div class="kpi amber"> <div class="kpi-label">Fwd High 5+</div>   <div class="kpi-value" id="kp-fh">0</div>    <div class="kpi-delta d-up">DC Fwd Floor Miss</div></div>
+    <div class="kpi sky">   <div class="kpi-label">Fwd Short</div>     <div class="kpi-value" id="kp-fs">0</div>    <div class="kpi-delta d-up">DCH/DC-DC Short</div></div>
+    <div class="kpi emerald"><div class="kpi-label">RVP Short</div>    <div class="kpi-value" id="kp-rs">0</div>    <div class="kpi-delta d-up">DC-DC Short Return</div></div>
+    <div class="kpi orange"><div class="kpi-label">Total Rows</div>    <div class="kpi-value" id="kp-total">0</div> <div class="kpi-delta d-neu">loaded</div></div>
   </div>
 
   <div class="fbar">
@@ -681,38 +566,36 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
     <label>POD:</label>
     <select class="fsel" id="p-pod" onchange="renderPendency()"><option value="">All</option></select>
     <label>Ageing ≥:</label>
-    <input type="number" class="fsel" id="p-age" value="0" min="0" style="width:60px" onchange="renderPendency()">
+    <input type="number" class="fsel" id="p-age" value="0" min="0" style="width:60px" oninput="renderPendency()">
   </div>
 
   <div class="tpanel">
     <div class="tpanel-head">
       <div>
-        <div class="tpanel-title" id="p-tbl-title">CB 10+ · Hub-level view</div>
+        <div class="tpanel-title" id="p-tbl-title">CB 10+ · Hub-level</div>
         <div class="tpanel-sub" id="p-tbl-sub">Loss Bucket 2: LM CB Pendency (Self / Franchise)</div>
       </div>
       <div class="tpanel-actions">
-        <input class="search-box" placeholder="Search hub / zone…" oninput="ft('p-tbody',this.value)">
-        <button class="btn btn-ghost btn-sm" onclick="dlTbl('p-tbody','pendency_export.csv')">↓ CSV</button>
+        <input class="srch-box" placeholder="Search hub / zone…" oninput="ft('p-tbody',this.value)">
+        <button class="btn btn-outline btn-sm" onclick="dlTbl('p-tbody','pendency.csv')">↓ CSV</button>
       </div>
     </div>
     <div class="tscroll">
       <table>
         <thead id="p-thead"></thead>
-        <tbody id="p-tbody"></tbody>
+        <tbody id="p-tbody"><tr><td colspan="10" style="text-align:center;padding:32px;color:var(--txt-muted);font-style:italic">Upload a CSV file to see hub-wise data</td></tr></tbody>
       </table>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     TAB 2 · RTO & RVP LOSS
-═══════════════════════════════════════ -->
+<!-- ══════════════════════ TAB 2 · RTO & RVP ══════════════════════ -->
 <div class="tab-pane" id="tab-rto">
-  <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
-    <div class="kpi rose">   <div class="kpi-label">RTO Pendency</div>  <div class="kpi-value" id="kr-rto">—</div><div class="kpi-delta d-up">+9%</div></div>
-    <div class="kpi violet"> <div class="kpi-label">RVP Pendency</div>  <div class="kpi-value" id="kr-rvp">—</div><div class="kpi-delta d-dn">↓2%</div></div>
-    <div class="kpi amber">  <div class="kpi-label">RVP Short</div>     <div class="kpi-value" id="kr-rs">—</div> <div class="kpi-delta d-up">+7%</div></div>
-    <div class="kpi indigo"> <div class="kpi-label">Critical Hubs</div> <div class="kpi-value" id="kr-crit">—</div><div class="kpi-delta d-up">+4</div></div>
+  <div class="kpi-row" style="grid-template-columns:repeat(auto-fit,minmax(165px,1fr))">
+    <div class="kpi crimson"><div class="kpi-label">RTO Pendency</div>  <div class="kpi-value" id="kr-rto">0</div><div class="kpi-delta d-up">prev/order = RTO</div></div>
+    <div class="kpi violet"> <div class="kpi-label">RVP Pendency</div>  <div class="kpi-value" id="kr-rvp">0</div><div class="kpi-delta d-up">Floor Miss RVP</div></div>
+    <div class="kpi amber">  <div class="kpi-label">RVP Short</div>     <div class="kpi-value" id="kr-rs">0</div> <div class="kpi-delta d-up">DC-DC Short Return</div></div>
+    <div class="kpi sky">    <div class="kpi-label">Critical Hubs</div> <div class="kpi-value" id="kr-crit">0</div><div class="kpi-delta d-up">score &gt;70</div></div>
   </div>
   <div class="fbar">
     <label>Sub-view:</label>
@@ -737,109 +620,91 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
         <div class="tpanel-sub" id="rto-tbl-sub">previous_order_status = RTO or order_status = RTO</div>
       </div>
       <div class="tpanel-actions">
-        <input class="search-box" placeholder="Search…" oninput="ft('rto-tbody',this.value)">
-        <button class="btn btn-ghost btn-sm" onclick="dlTbl('rto-tbody','rto_export.csv')">↓ CSV</button>
+        <input class="srch-box" placeholder="Search…" oninput="ft('rto-tbody',this.value)">
+        <button class="btn btn-outline btn-sm" onclick="dlTbl('rto-tbody','rto.csv')">↓ CSV</button>
       </div>
     </div>
     <div class="tscroll">
-      <table>
-        <thead id="rto-thead"></thead>
-        <tbody id="rto-tbody"></tbody>
-      </table>
+      <table><thead id="rto-thead"></thead><tbody id="rto-tbody"><tr><td colspan="7" style="text-align:center;padding:32px;color:var(--txt-muted);font-style:italic">Upload CSV to see data</td></tr></tbody></table>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     TAB 3 · FRAUD BUCKETS
-═══════════════════════════════════════ -->
+<!-- ══════════════════════ TAB 3 · FRAUD BUCKETS ══════════════════════ -->
 <div class="tab-pane" id="tab-fraud">
-  <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
-    <div class="kpi rose">  <div class="kpi-label">Total Loss Rows</div><div class="kpi-value" id="kf-total">—</div><div class="kpi-delta d-up">+18%</div></div>
-    <div class="kpi indigo"><div class="kpi-label">Fraud Weight</div>  <div class="kpi-value" id="kf-fw">60%</div> <div class="kpi-delta d-neu">of score</div></div>
-    <div class="kpi amber"> <div class="kpi-label">Hubs Affected</div> <div class="kpi-value" id="kf-hubs">—</div><div class="kpi-delta d-up">+7</div></div>
-    <div class="kpi violet"><div class="kpi-label">Top Loss Bucket</div><div class="kpi-value" style="font-size:13px;font-family:'Plus Jakarta Sans'" id="kf-top">—</div></div>
+  <div class="kpi-row" style="grid-template-columns:repeat(auto-fit,minmax(165px,1fr))">
+    <div class="kpi crimson"><div class="kpi-label">Total Loss Rows</div><div class="kpi-value" id="kf-total">0</div><div class="kpi-delta d-up">all buckets</div></div>
+    <div class="kpi blue">  <div class="kpi-label">Fraud Weight</div>  <div class="kpi-value" id="kf-fw">60%</div><div class="kpi-delta d-neu">of score</div></div>
+    <div class="kpi amber"> <div class="kpi-label">Hubs Affected</div> <div class="kpi-value" id="kf-hubs">0</div><div class="kpi-delta d-up">—</div></div>
+    <div class="kpi violet"><div class="kpi-label">Top Bucket</div>    <div class="kpi-value" style="font-size:13px;font-family:'Plus Jakarta Sans'" id="kf-top">—</div></div>
   </div>
   <div class="fbar">
     <label>Month:</label>
-    <select class="fsel" id="fr-month" onchange="renderFraud()">
-      <option value="">All data</option>
-    </select>
+    <select class="fsel" id="fr-month" onchange="renderFraud()"><option value="">All months</option></select>
     <label>Loss Bucket 1:</label>
     <select class="fsel" id="fr-lb1" onchange="renderFraud()"><option value="">All</option></select>
     <label>Zone:</label>
     <select class="fsel" id="fr-zone" onchange="renderFraud()"><option value="">All</option></select>
   </div>
   <div class="dlrow">
-    <span>Download filtered:</span>
-    <button class="btn btn-sm" onclick="dlFraud(50)">Bottom 50</button>
-    <button class="btn btn-sm" onclick="dlFraud(100)">Bottom 100</button>
-    <button class="btn btn-sm" onclick="dlFraud(200)">Bottom 200</button>
-    <button class="btn btn-sm" onclick="dlFraud(300)">Bottom 300</button>
+    <span>Download:</span>
+    <button class="btn btn-outline btn-sm" onclick="dlFraud(50)">Bottom 50</button>
+    <button class="btn btn-outline btn-sm" onclick="dlFraud(100)">Bottom 100</button>
+    <button class="btn btn-outline btn-sm" onclick="dlFraud(200)">Bottom 200</button>
+    <button class="btn btn-outline btn-sm" onclick="dlFraud(300)">Bottom 300</button>
   </div>
   <div class="twocol">
     <div class="pcard">
       <div class="pcard-head"><div class="pcard-title">Top hubs by Loss Bucket 2</div></div>
       <div class="pcard-body">
         <select class="fsel" id="fr-lb2" onchange="renderFraudDetail()" style="width:100%;margin-bottom:12px"></select>
-        <div id="fr-detail-body"></div>
+        <div id="fr-detail-body"><div style="font-size:11px;color:var(--txt-muted)">Upload CSV to see data</div></div>
       </div>
     </div>
     <div class="pcard">
       <div class="pcard-head"><div class="pcard-title">Loss Bucket 2 totals</div></div>
-      <div class="pcard-body" id="fr-overview-body"></div>
+      <div class="pcard-body" id="fr-overview-body"><div style="font-size:11px;color:var(--txt-muted)">Upload CSV to see data</div></div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     TAB 4 · HUB SCORECARD
-═══════════════════════════════════════ -->
+<!-- ══════════════════════ TAB 4 · HUB SCORECARD ══════════════════════ -->
 <div class="tab-pane" id="tab-scorecard">
 
   <div class="rules-bar">
     <div class="rules-bar-left">
       <span class="rules-bar-lbl">Active rules:</span>
-      <div class="active-pills-row" id="active-pills-row"></div>
+      <div class="active-pills-row" id="active-pills-row"><span style="font-size:11px;color:var(--txt-muted);font-style:italic">None yet</span></div>
     </div>
-    <button class="btn btn-amber btn-sm" onclick="openGate()">
-      <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
-        <rect x="3" y="9" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M7 9V6a3 3 0 016 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      Add / Edit Rules
-    </button>
+    <button class="btn btn-amber btn-sm" onclick="openGate()">🔒 Add / Edit Rules</button>
   </div>
 
-  <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(145px,1fr))">
-    <div class="kpi indigo"><div class="kpi-label">Fraud Weight</div>   <div class="kpi-value" id="sc-fw-v">60%</div></div>
-    <div class="kpi violet"><div class="kpi-label">Pendency Weight</div><div class="kpi-value" id="sc-pw-v">40%</div></div>
-    <div class="kpi sky">   <div class="kpi-label">Total Hubs</div>     <div class="kpi-value" id="sc-hubs">—</div></div>
-    <div class="kpi emerald"><div class="kpi-label">Active Rules</div>  <div class="kpi-value" id="sc-rules">—</div></div>
+  <div class="kpi-row" style="grid-template-columns:repeat(auto-fit,minmax(145px,1fr))">
+    <div class="kpi blue">   <div class="kpi-label">Fraud Weight</div>    <div class="kpi-value" id="sc-fw-v">60%</div></div>
+    <div class="kpi violet"> <div class="kpi-label">Pendency Weight</div> <div class="kpi-value" id="sc-pw-v">40%</div></div>
+    <div class="kpi sky">    <div class="kpi-label">Total Hubs</div>      <div class="kpi-value" id="sc-hubs">0</div></div>
+    <div class="kpi emerald"><div class="kpi-label">Active Rules</div>    <div class="kpi-value" id="sc-rules">0</div></div>
   </div>
 
   <div class="fbar">
     <label>Rank by:</label>
-    <div class="snav" id="sc-lvl-nav">
+    <div class="snav">
       <button class="snb active" onclick="scLvl(this,'Node')">Hub</button>
       <button class="snb" onclick="scLvl(this,'Zone')">Zone</button>
       <button class="snb" onclick="scLvl(this,'POD')">POD</button>
     </div>
     <label>Show:</label>
-    <div class="snav" id="sc-mode-nav">
+    <div class="snav">
       <button class="snb active" onclick="scMode(this,'bottom')">Bottom</button>
       <button class="snb" onclick="scMode(this,'top')">Top</button>
       <button class="snb" onclick="scMode(this,'all')">All</button>
     </div>
     <label>N:</label>
-    <select class="fsel" id="sc-n" onchange="renderSC()">
-      <option>50</option><option>100</option><option>150</option><option>200</option>
-    </select>
+    <select class="fsel" id="sc-n" onchange="renderSC()"><option>50</option><option>100</option><option>150</option><option>200</option></select>
     <label>Zone:</label>
     <select class="fsel" id="sc-zone" onchange="renderSC()"><option value="">All</option></select>
-    <button class="btn btn-indigo btn-sm" onclick="dlSC()">↓ Download</button>
+    <button class="btn btn-blue btn-sm" onclick="dlSC()">↓ Download</button>
   </div>
-
   <div class="fbar" style="margin-top:-8px">
     <label>Zone bottom:</label>
     <button class="snb" onclick="zoneBot(50)">Bottom 50</button>
@@ -851,9 +716,9 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
     <div class="tpanel-head">
       <div>
         <div class="tpanel-title" id="sc-tbl-title">Hub scorecard — bottom 50</div>
-        <div class="tpanel-sub" id="sc-formula">Formula: 60% fraud/loss weight + 40% pendency weight</div>
+        <div class="tpanel-sub" id="sc-formula">Formula: 60% loss + 40% pendency</div>
       </div>
-      <input class="search-box" placeholder="Search…" oninput="ft('sc-tbody',this.value)">
+      <input class="srch-box" placeholder="Search…" oninput="ft('sc-tbody',this.value)">
     </div>
     <div class="tscroll">
       <table>
@@ -861,18 +726,18 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
           <th style="width:36px">#</th>
           <th style="width:120px">Hub / Group</th>
           <th style="width:70px">Zone</th>
-          <th style="width:60px">POD</th>
-          <th style="width:70px">CB 10+</th>
-          <th style="width:70px">LM-ODC</th>
-          <th style="width:70px">Intransit</th>
-          <th style="width:70px">Fwd Short</th>
-          <th style="width:70px">RVP Short</th>
-          <th style="width:80px">Loss Score</th>
-          <th style="width:80px">Pend Score</th>
-          <th style="width:95px">Weighted</th>
+          <th style="width:62px">POD</th>
+          <th style="width:65px">CB 10+</th>
+          <th style="width:65px">LM-ODC</th>
+          <th style="width:65px">Intransit</th>
+          <th style="width:65px">Fwd Short</th>
+          <th style="width:65px">RVP Short</th>
+          <th style="width:78px">Loss Sc.</th>
+          <th style="width:78px">Pend Sc.</th>
+          <th style="width:90px">Weighted</th>
           <th style="width:70px">Status</th>
         </tr></thead>
-        <tbody id="sc-tbody"></tbody>
+        <tbody id="sc-tbody"><tr><td colspan="13" style="text-align:center;padding:32px;color:var(--txt-muted);font-style:italic">Upload CSV to see rankings</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -881,129 +746,86 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
     <div class="tpanel">
       <div class="tpanel-head">
         <div><div class="tpanel-title" id="zb-title">Zone-wise bottom hubs</div></div>
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('zb-wrap').style.display='none'">✕ Close</button>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('zb-wrap').style.display='none'">✕ Close</button>
       </div>
       <div class="tscroll">
         <table>
-          <thead><tr>
-            <th style="width:90px">Zone</th><th style="width:140px">Hub</th>
-            <th style="width:90px">Score</th><th style="width:80px">Status</th>
-          </tr></thead>
+          <thead><tr><th style="width:90px">Zone</th><th style="width:140px">Hub</th><th style="width:90px">Score</th><th style="width:80px">Status</th></tr></thead>
           <tbody id="zb-tbody"></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- Gate -->
+  <!-- Gate modal -->
   <div class="gate-wrap" id="gate-wrap" style="display:none">
     <div class="gate-box">
-      <div class="gate-title">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="11" width="18" height="11" rx="2" stroke="var(--indigo-l)" stroke-width="1.5"/>
-          <path d="M7 11V7a5 5 0 0110 0v4" stroke="var(--indigo-l)" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        Admin Access
-      </div>
+      <div class="gate-title">🔒 Admin Access</div>
       <div class="gate-sub">Sign in to edit scoring rules. Changes sync to Google Sheets.</div>
       <label class="gate-label">Username</label>
       <input class="gate-inp" id="gate-user" placeholder="admin" autocomplete="off">
       <label class="gate-label">Password</label>
       <input class="gate-inp" id="gate-pass" type="password" placeholder="••••••••">
       <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="btn btn-indigo" style="flex:1;justify-content:center;padding:10px" onclick="gateLogin()">Unlock Editor</button>
-        <button class="btn btn-ghost" onclick="closeGate()">Cancel</button>
+        <button class="btn btn-blue" style="flex:1;justify-content:center;padding:10px" onclick="gateLogin()">Unlock Editor</button>
+        <button class="btn btn-outline" onclick="closeGate()">Cancel</button>
       </div>
       <div class="gate-err" id="gate-err">Incorrect credentials.</div>
-      <div class="gate-hint">Demo: admin / password123</div>
+      <div class="gate-hint">Demo credentials: admin / password123</div>
     </div>
   </div>
 
-  <!-- Rule Editor -->
+  <!-- Rule editor -->
   <div class="reditor" id="reditor">
     <div class="reditor-head">
-      <div class="reditor-title">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="11" width="18" height="11" rx="2" stroke="var(--indigo-l)" stroke-width="1.5"/>
-          <path d="M7 11V7a5 5 0 0110 0v4" stroke="var(--indigo-l)" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        Scoring Rule Editor
-        <span class="admin-tag">Admin</span>
-      </div>
+      <div class="reditor-title">🔓 Scoring Rule Editor <span class="admin-tag">Admin</span></div>
       <div style="display:flex;gap:8px">
-        <button class="btn btn-xs btn-ghost" onclick="purgeOld()">🗑 Purge &gt;30d</button>
-        <button class="btn btn-xs btn-ghost" onclick="lockEditor()">Lock &amp; Exit</button>
+        <button class="btn btn-outline btn-xs" onclick="purgeOld()">🗑 Purge &gt;30d from Sheets</button>
+        <button class="btn btn-outline btn-xs" onclick="lockEditor()">Lock &amp; Exit</button>
       </div>
     </div>
     <div class="reditor-body">
       <div class="sec-hdr"><div class="sec-hdr-title">Scoring Weights</div><div class="sec-hdr-line"></div></div>
       <div class="w-row">
-        <div class="w-item">
-          <div class="w-lbl">Fraud / Loss (%)</div>
-          <input class="w-inp" type="number" id="w-fraud" min="0" max="100" value="60" oninput="syncW('fraud')">
-        </div>
+        <div class="w-item"><div class="w-lbl">Fraud / Loss (%)</div><input class="w-inp" type="number" id="w-fraud" min="0" max="100" value="60" oninput="syncW('fraud')"></div>
         <div class="w-sep">+</div>
-        <div class="w-item">
-          <div class="w-lbl">Pendency (%)</div>
-          <input class="w-inp" type="number" id="w-pend" min="0" max="100" value="40" oninput="syncW('pend')">
-        </div>
+        <div class="w-item"><div class="w-lbl">Pendency (%)</div><input class="w-inp" type="number" id="w-pend" min="0" max="100" value="40" oninput="syncW('pend')"></div>
         <div class="w-sep">=</div>
-        <div class="w-item">
-          <div class="w-lbl">Total</div>
-          <div class="w-total-val" id="w-total" style="color:var(--emerald-l)">100</div>
-        </div>
+        <div class="w-item"><div class="w-lbl">Total</div><div class="w-total-val" id="w-total" style="color:var(--emerald)">100</div></div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-        <button class="btn btn-indigo btn-sm" onclick="applyW()">Apply &amp; Save</button>
+        <button class="btn btn-blue btn-sm" onclick="applyW()">Apply &amp; Save to Sheets</button>
         <span class="save-msg" id="w-msg">✓ Saved to Sheets</span>
       </div>
-
       <div class="sec-hdr" style="margin-top:4px"><div class="sec-hdr-title">Scoring Rules</div><div class="sec-hdr-line"></div></div>
       <div id="rules-list"></div>
       <button class="add-rule-btn" id="add-rule-btn" onclick="showRForm()">+ Add new scoring rule</button>
-
       <div class="rform" id="rform">
         <div class="rform-title" id="rform-title">New scoring rule</div>
         <input type="hidden" id="rf-id" value="">
         <div class="rform-grid">
           <div class="rfl-row"><span class="rfl">Rule name</span><input class="rfi" id="rf-name" placeholder="e.g. High Loss Penalty"></div>
-          <div class="rfl-row"><span class="rfl">Applies to</span>
-            <select class="rfi" id="rf-applies"><option value="all">All hubs</option><option value="zone">Specific zone</option><option value="pod">Specific POD</option></select>
-          </div>
+          <div class="rfl-row"><span class="rfl">Applies to</span><select class="rfi" id="rf-applies"><option value="all">All hubs</option><option value="zone">Specific zone</option><option value="pod">Specific POD</option></select></div>
           <div class="rfl-row"><span class="rfl">Metric</span>
             <select class="rfi" id="rf-metric">
-              <option value="lossScore">Loss Score</option>
-              <option value="pendScore">Pendency Score</option>
-              <option value="cbCount">CB 10+ Count</option>
-              <option value="odcCount">LM-ODC Count</option>
-              <option value="itCount">Intransit Count</option>
-              <option value="fwdShortCount">Fwd Short Count</option>
-              <option value="rvpShortCount">RVP Short Count</option>
-              <option value="weightedScore">Weighted Score</option>
+              <option value="lossScore">Loss Score</option><option value="pendScore">Pendency Score</option>
+              <option value="cbCount">CB 10+ Count</option><option value="odcCount">LM-ODC Count</option>
+              <option value="itCount">Intransit Count</option><option value="fwdShortCount">Fwd Short Count</option>
+              <option value="rvpShortCount">RVP Short Count</option><option value="weightedScore">Weighted Score</option>
             </select>
           </div>
           <div class="rfl-row"><span class="rfl">Condition</span>
-            <select class="rfi" id="rf-cond">
-              <option value="gt">&gt; Greater than</option><option value="gte">&gt;= Greater or equal</option>
-              <option value="lt">&lt; Less than</option><option value="lte">&lt;= Less or equal</option>
-            </select>
+            <select class="rfi" id="rf-cond"><option value="gt">&gt; Greater than</option><option value="gte">&gt;= Greater or equal</option><option value="lt">&lt; Less than</option><option value="lte">&lt;= Less or equal</option></select>
           </div>
           <div class="rfl-row"><span class="rfl">Threshold</span><input class="rfi" type="number" id="rf-thr" placeholder="70"></div>
           <div class="rfl-row"><span class="rfl">Multiplier</span><input class="rfi" type="number" id="rf-mul" step="0.1" placeholder="1.5"></div>
-          <div class="rfl-row"><span class="rfl">Priority</span>
-            <select class="rfi" id="rf-pri"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
-          </div>
-          <div class="rfl-row"><span class="rfl">Status</span>
-            <select class="rfi" id="rf-status"><option value="active">Active</option><option value="inactive">Inactive</option></select>
-          </div>
+          <div class="rfl-row"><span class="rfl">Priority</span><select class="rfi" id="rf-pri"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></div>
+          <div class="rfl-row"><span class="rfl">Status</span><select class="rfi" id="rf-status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
         </div>
-        <div class="rform-hint">
-          When [<em>metric</em>] [<em>condition</em>] [<em>threshold</em>], multiply the hub's weighted score by [<em>multiplier</em>].
-          Example: <strong>lossScore &gt; 70 → ×1.5</strong> escalates high-loss hubs in rankings. Multiplier &gt;1 increases risk rank.
-        </div>
+        <div class="rform-hint">When [<em>metric</em>] [<em>condition</em>] [<em>threshold</em>], multiply the hub's final score by [<em>multiplier</em>]. E.g. lossScore &gt; 70 → ×1.5 escalates high-risk hubs.</div>
         <div style="display:flex;align-items:center;gap:8px">
-          <button class="btn btn-indigo btn-sm" onclick="saveRule()">Save to Sheets</button>
-          <button class="btn btn-ghost btn-sm" onclick="cancelRForm()">Cancel</button>
+          <button class="btn btn-blue btn-sm" onclick="saveRule()">Save to Sheets</button>
+          <button class="btn btn-outline btn-sm" onclick="cancelRForm()">Cancel</button>
           <span class="save-msg" id="rule-msg">✓ Saved</span>
         </div>
       </div>
@@ -1011,9 +833,7 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     TAB 5 · TREND ANALYSIS
-═══════════════════════════════════════ -->
+<!-- ══════════════════════ TAB 5 · TREND ══════════════════════ -->
 <div class="tab-pane" id="tab-trend">
   <div class="trend-ctrl">
     <label>Dimension:</label>
@@ -1025,13 +845,12 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
     </div>
     <label>Metric:</label>
     <select class="fsel" id="t-metric" onchange="renderTrend()">
-      <option value="weightedScore">Weighted score</option>
-      <option value="cbCount">CB 10+ count</option>
-      <option value="odcCount">LM-ODC count</option>
-      <option value="itCount">Intransit count</option>
-      <option value="fwdShortCount">Fwd Short count</option>
-      <option value="rvpShortCount">RVP Short count</option>
-      <option value="lossScore">Loss score</option>
+      <option value="weighted">Weighted score</option>
+      <option value="cb">CB 10+ count</option>
+      <option value="odc">LM-ODC count</option>
+      <option value="it">Intransit count</option>
+      <option value="fwdShort">Fwd Short count</option>
+      <option value="rvpShort">RVP Short count</option>
     </select>
     <label>Filter:</label>
     <select class="fsel" id="t-filter" onchange="renderTrend()"><option value="">All</option></select>
@@ -1049,124 +868,128 @@ tbody td { padding:8px 12px; color:var(--txt-main); white-space:nowrap; overflow
     <div class="pcard-head"><div class="pcard-title" id="t-bar-title">Average score by Zone</div></div>
     <div class="pcard-body">
       <div style="position:relative;width:100%;height:220px">
-        <canvas id="tBarC" role="img" aria-label="Score comparison bar chart">Score data.</canvas>
+        <canvas id="tBarC" role="img" aria-label="Average score bar chart">Score data.</canvas>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     TAB 6 · DATA UPLOAD
-═══════════════════════════════════════ -->
+<!-- ══════════════════════ TAB 6 · UPLOAD ══════════════════════ -->
 <div class="tab-pane" id="tab-upload">
-  <div style="max-width:680px">
+  <div style="max-width:700px">
 
     <div id="parse-progress">
-      <div style="font-size:11px;font-weight:600;color:var(--indigo-l)" id="prog-label">Parsing CSV…</div>
+      <div style="font-size:12px;font-weight:700;color:var(--blue)" id="prog-label">Parsing CSV…</div>
       <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
     </div>
 
-    <div style="margin-bottom:18px">
-      <div class="sec-hdr"><div class="sec-hdr-title">Upload your loss data CSV</div><div class="sec-hdr-line"></div></div>
-      <p style="font-size:12px;color:var(--txt-muted);line-height:1.7;margin-bottom:14px">
-        Upload the full loss data export. The dashboard auto-groups by <code style="font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(99,102,241,.1);padding:1px 5px;border-radius:4px;color:var(--indigo-l)">Node</code> (hub), applies bucket filters from your column definitions, and restricts to the last <strong style="color:var(--indigo-l)">30 days</strong> based on <code style="font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(99,102,241,.1);padding:1px 5px;border-radius:4px;color:var(--indigo-l)">lost_date</code>. Handles ~9 lakh rows.
-      </p>
-    </div>
+    <div class="sec-hdr"><div class="sec-hdr-title">Upload loss data CSV (up to 9 lakh rows)</div><div class="sec-hdr-line"></div></div>
+    <p style="font-size:12px;color:var(--txt-muted);line-height:1.8;margin-bottom:16px">
+      Upload your full loss export CSV. All rows are loaded into memory — no 30-day cut is applied at upload time.
+      The dashboard groups by <strong>Node</strong> (your hub column) and applies the bucket filters defined below.
+      Date-based views use <strong>lost_date</strong> or <strong>picked_date</strong>.
+    </p>
 
-    <div style="margin-bottom:16px">
-      <div class="ulabel">Loss data CSV (primary upload)</div>
-      <div class="udrop" id="udrop-main" onclick="document.getElementById('csv-main').click()"
-           ondragover="dov(event,'udrop-main')" ondragleave="dol('udrop-main')" ondrop="dop(event,'udrop-main','csv-main','ust-main','main')">
-        <div class="udrop-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="var(--indigo-l)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="ugrid">
+      <div>
+        <div class="ulabel">Loss data CSV — drag &amp; drop or click</div>
+        <div class="udrop" id="udrop-main"
+             onclick="document.getElementById('csv-main').click()"
+             ondragover="dov(event,'udrop-main')"
+             ondragleave="dol('udrop-main')"
+             ondrop="dop(event,'udrop-main','csv-main','ust-main')">
+          <div class="udrop-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round"/>
+              <polyline points="17,8 12,3 7,8" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="12" y1="3" x2="12" y2="15" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="udrop-text">Click to browse or drag CSV here</div>
+          <div class="udrop-sub">Supports files with ~9 lakh rows · Parsed in browser · No size limit<br>
+          Required: Node · Zone · POD · Loss Bucket 1 · Loss Bucket 2 · lost_date · ageing · order_status · previous_order_status</div>
+          <input type="file" id="csv-main" accept=".csv" style="display:none" onchange="handleCSV(event,'ust-main')">
         </div>
-        <div class="udrop-text">Click or drag CSV file here</div>
-        <div class="udrop-sub">Expected columns: awb_number · Node · Zone · POD · Loss Bucket 1 · Loss Bucket 2 · lost_date · ageing · order_status · previous_order_status · product_value · debit_value … and all others</div>
-        <input type="file" id="csv-main" accept=".csv" style="display:none" onchange="handleCSV(event,'ust-main','main')">
+        <div class="ustatus" id="ust-main"></div>
       </div>
-      <div class="ustatus" id="ust-main"></div>
     </div>
 
     <div class="pcard" style="margin-bottom:14px">
-      <div class="pcard-head">
-        <div class="pcard-title">Upload history</div>
-        <button class="btn btn-ghost btn-xs" onclick="loadHist()">↻ Refresh</button>
-      </div>
-      <div class="pcard-body" id="hist-body">
-        <div style="font-size:11px;color:var(--txt-muted)">No uploads yet.</div>
-      </div>
+      <div class="pcard-head"><div class="pcard-title">Upload history (this session)</div></div>
+      <div class="pcard-body" id="hist-body"><div style="font-size:11px;color:var(--txt-muted)">No uploads yet.</div></div>
     </div>
 
-    <div style="background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.05));border:1px solid var(--border-accent);border-radius:var(--radius-lg);padding:16px 20px">
+    <div style="background:linear-gradient(135deg,var(--blue-bg),var(--violet-bg));border:1.5px solid var(--blue-border);border-radius:14px;padding:18px 20px;margin-bottom:16px">
       <div style="font-size:14px;font-weight:800;color:var(--txt-hi);margin-bottom:4px">Weekly Closure Report</div>
       <div style="font-size:11px;color:var(--txt-muted);margin-bottom:12px">Next: <span id="next-rpt">—</span></div>
-      <button class="btn btn-indigo" onclick="dlReport()">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 10l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        Download Weekly Report
-      </button>
+      <button class="btn btn-blue" onclick="dlReport()">↓ Download Weekly Report</button>
     </div>
 
-    <div style="margin-top:18px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px">
-      <div style="font-size:10px;font-weight:700;color:var(--txt-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Column Mapping Reference</div>
-      <div style="font-size:10px;color:var(--txt-muted);line-height:2;font-family:'JetBrains Mono',monospace">
-        <div><span style="color:var(--rose-l)">CB 10+:</span>         Loss_Bucket_2 ∈ ['LM CB Pendency (Self)', 'LM CB Pendency (Franchise)']</div>
-        <div><span style="color:var(--indigo-l)">LM-ODC Short:</span> Loss_Bucket_2 = 'LM to ODC Short'</div>
-        <div><span style="color:var(--violet-l)">Intransit 10+:</span>Loss_Bucket_1 = 'LH Bag Miss'</div>
-        <div><span style="color:var(--amber-l)">Fwd High 5+:</span>   Loss_Bucket_2 = 'DC Forward Floor Miss'</div>
-        <div><span style="color:var(--sky-l)">Fwd Short:</span>       Loss_Bucket_2 ∈ ['DCH/DCH2 Short Forward', 'DC-DC Short Forward']</div>
-        <div><span style="color:var(--emerald-l)">RVP Short:</span>   Loss_Bucket_2 = 'DC-DC Short Return'</div>
-        <div style="margin-top:6px"><span style="color:var(--rose-l)">RTO Pendency:</span> previous_order_status = 'RTO' OR order_status = 'RTO'</div>
-        <div><span style="color:var(--violet-l)">RVP Pendency:</span> Loss_Bucket_2 = 'Floor Miss RVP'</div>
+    <div class="schema-box">
+      <div class="schema-box-title">Column Mapping Reference</div>
+      <div style="font-size:10px;color:var(--txt-muted);line-height:2.2;font-family:'JetBrains Mono',monospace">
+        <div><span style="color:var(--crimson);font-weight:700">CB 10+:</span>         Loss Bucket 2 ∈ [LM CB Pendency (Self), LM CB Pendency (Franchise)]</div>
+        <div><span style="color:var(--blue);font-weight:700">LM-ODC Short:</span>     Loss Bucket 2 = LM to ODC Short</div>
+        <div><span style="color:var(--violet);font-weight:700">Intransit 10+:</span>   Loss Bucket 1 = LH Bag Miss</div>
+        <div><span style="color:var(--amber);font-weight:700">Fwd High 5+:</span>      Loss Bucket 2 = DC Forward Floor Miss</div>
+        <div><span style="color:var(--sky);font-weight:700">Fwd Short:</span>          Loss Bucket 2 ∈ [DCH/DCH2 Short Forward, DC-DC Short Forward]</div>
+        <div><span style="color:var(--emerald);font-weight:700">RVP Short:</span>      Loss Bucket 2 = DC-DC Short Return</div>
+        <div style="margin-top:6px"><span style="color:var(--crimson);font-weight:700">RTO Pendency:</span>  previous_order_status = RTO OR order_status = RTO</div>
+        <div><span style="color:var(--violet);font-weight:700">RVP Pendency:</span>   Loss Bucket 2 = Floor Miss RVP</div>
       </div>
     </div>
   </div>
 </div>
 
 </div><!-- end .content -->
-</div><!-- end .app -->
 
 <script>
 /* ════════════════════════════════════════════════
-   CONFIG
+   CONFIGURATION
 ════════════════════════════════════════════════ */
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxDte4YFL3mUsJpAoNWJL_XiQA6qP7vm5iC-Yeco647HMcOHd6kwSgY9u0eBXPA_G1N5Q/exec';
 const ADMIN_CREDS = { admin: 'password123' };
 
 /* ════════════════════════════════════════════════
-   BUCKET FILTER DEFINITIONS
+   BUCKET FILTER DEFINITIONS — match your exact column values
 ════════════════════════════════════════════════ */
+function getField(r, ...keys) {
+  for (const k of keys) { if (r[k] !== undefined && r[k] !== null && r[k] !== '') return String(r[k]).trim(); }
+  return '';
+}
+
 const BUCKETS = {
-  cb:       r => ['LM CB Pendency (Self)','LM CB Pendency (Franchise)'].includes((r['Loss Bucket 2']||r['Loss_Bucket_2']||'').trim()),
-  odc:      r => (r['Loss Bucket 2']||r['Loss_Bucket_2']||'').trim() === 'LM to ODC Short',
-  intransit:r => (r['Loss Bucket 1']||r['Loss_Bucket_1']||'').trim() === 'LH Bag Miss',
-  fwdHigh:  r => (r['Loss Bucket 2']||r['Loss_Bucket_2']||'').trim() === 'DC Forward Floor Miss',
-  fwdShort: r => ['DCH/DCH2 Short Forward','DC-DC Short Forward'].includes((r['Loss Bucket 2']||r['Loss_Bucket_2']||'').trim()),
-  rvpShort: r => (r['Loss Bucket 2']||r['Loss_Bucket_2']||'').trim() === 'DC-DC Short Return',
-  rtoPend:  r => ['RTO'].includes((r['previous_order_status']||'').trim().toUpperCase()) || ['RTO'].includes((r['order_status']||'').trim().toUpperCase()),
-  rvpPend:  r => (r['Loss Bucket 2']||r['Loss_Bucket_2']||'').trim() === 'Floor Miss RVP'
+  cb:        r => { const v = getField(r,'Loss Bucket 2','Loss_Bucket_2'); return v==='LM CB Pendency (Self)' || v==='LM CB Pendency (Franchise)'; },
+  odc:       r => getField(r,'Loss Bucket 2','Loss_Bucket_2') === 'LM to ODC Short',
+  intransit: r => getField(r,'Loss Bucket 1','Loss_Bucket_1') === 'LH Bag Miss',
+  fwdHigh:   r => getField(r,'Loss Bucket 2','Loss_Bucket_2') === 'DC Forward Floor Miss',
+  fwdShort:  r => { const v = getField(r,'Loss Bucket 2','Loss_Bucket_2'); return v==='DCH/DCH2 Short Forward' || v==='DC-DC Short Forward'; },
+  rvpShort:  r => getField(r,'Loss Bucket 2','Loss_Bucket_2') === 'DC-DC Short Return',
+  rtoPend:   r => { const p = getField(r,'previous_order_status').toUpperCase(); const o = getField(r,'order_status').toUpperCase(); return p==='RTO' || o==='RTO'; },
+  rvpPend:   r => getField(r,'Loss Bucket 2','Loss_Bucket_2') === 'Floor Miss RVP'
 };
 
-const BUCKET_LABELS = {
-  cb:       { title:'CB 10+',         sub:'Loss Bucket 2: LM CB Pendency (Self / Franchise)' },
-  odc:      { title:'LM-ODC Short',   sub:'Loss Bucket 2: LM to ODC Short' },
-  intransit:{ title:'Intransit 10+',  sub:'Loss Bucket 1: LH Bag Miss' },
-  fwdHigh:  { title:'Fwd High 5+',   sub:'Loss Bucket 2: DC Forward Floor Miss' },
-  fwdShort: { title:'Fwd Short',      sub:'Loss Bucket 2: DCH/DCH2 Short Forward, DC-DC Short Forward' },
-  rvpShort: { title:'RVP Short',      sub:'Loss Bucket 2: DC-DC Short Return' }
+const BUCKET_META = {
+  cb:        { title:'CB 10+',         sub:'Loss Bucket 2: LM CB Pendency (Self / Franchise)' },
+  odc:       { title:'LM-ODC Short',   sub:'Loss Bucket 2: LM to ODC Short' },
+  intransit: { title:'Intransit 10+',  sub:'Loss Bucket 1: LH Bag Miss' },
+  fwdHigh:   { title:'Fwd High 5+',    sub:'Loss Bucket 2: DC Forward Floor Miss' },
+  fwdShort:  { title:'Fwd Short',      sub:'Loss Bucket 2: DCH/DCH2 Short Forward, DC-DC Short Forward' },
+  rvpShort:  { title:'RVP Short',       sub:'Loss Bucket 2: DC-DC Short Return' }
 };
 
-const RTO_LABELS = {
-  rto:      { title:'RTO Pendency',   sub:'previous_order_status = RTO or order_status = RTO' },
-  rvp:      { title:'RVP Pendency',   sub:'Loss Bucket 2: Floor Miss RVP' },
-  rvpShort: { title:'RVP Short',      sub:'Loss Bucket 2: DC-DC Short Return' }
+const RTO_META = {
+  rto:       { title:'RTO Pendency',  sub:'previous_order_status = RTO or order_status = RTO' },
+  rvp:       { title:'RVP Pendency',  sub:'Loss Bucket 2: Floor Miss RVP' },
+  rvpShort:  { title:'RVP Short',     sub:'Loss Bucket 2: DC-DC Short Return' }
 };
 
 /* ════════════════════════════════════════════════
    STATE
 ════════════════════════════════════════════════ */
-let rawRows      = [];   // all parsed CSV rows (within 30 days)
-let hubIndex     = {};   // { nodeName -> { cb:[], odc:[], ... all rows } }
-let hubSummary   = [];   // computed per hub: counts + scores
+let rawRows    = [];
+let hubIndex   = {};
+let hubSummary = [];
 let scoringRules = [];
 let fraudW = 60, pendW = 40;
 let pSubSt = 'cb', pGrpSt = 'Node';
@@ -1174,290 +997,240 @@ let rtoSubSt = 'rto', rtoGrpSt = 'Node';
 let scLvlSt = 'Node', scModeSt = 'bottom';
 let trendDimSt = 'Zone';
 let tLineInst = null, tBarInst = null;
-
-const TCOLORS = ['#6366f1','#f43f5e','#f59e0b','#10b981','#0ea5e9','#8b5cf6','#f97316','#ec4899'];
-const ri = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const uploadHistory = [];
+const TCOLORS = ['#2563eb','#dc2626','#d97706','#059669','#7c3aed','#0284c7','#db2777','#ea580c'];
+const WEEKS = ['Week 1','Week 2','Week 3','Week 4'];
 
 /* ════════════════════════════════════════════════
-   CSV PARSING — handles ~9 lakh rows
+   CSV PARSING — handles 9L rows, NO date filter on load
 ════════════════════════════════════════════════ */
-async function handleCSV(event, statusId, type) {
-  const file = event.target.files[0]; if(!file) return;
+function handleCSV(event, statusId) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Reset input so same file can be re-uploaded
+  event.target.value = '';
+
   const st = document.getElementById(statusId);
-  st.textContent = `Parsing ${(file.size/1024/1024).toFixed(1)} MB…`; st.className='ustatus';
+  st.textContent = `Reading ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)…`;
+  st.className = 'ustatus';
 
-  const prog = document.getElementById('parse-progress');
-  const fill = document.getElementById('prog-fill');
-  const plbl = document.getElementById('prog-label');
-  prog.style.display = 'block'; fill.style.width='5%';
-  plbl.textContent = `Reading ${file.name}…`;
+  const prog  = document.getElementById('parse-progress');
+  const fill  = document.getElementById('prog-fill');
+  const plbl  = document.getElementById('prog-label');
+  prog.style.display = 'block';
+  fill.style.width = '5%';
+  plbl.textContent = `Parsing ${file.name}…`;
 
-  try {
-    await new Promise((resolve, reject) => {
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        dynamicTyping: false,
-        worker: false,
-        step: null,
-        complete(results) {
-          fill.style.width = '60%';
-          plbl.textContent = `Filtering 30-day window (${results.data.length.toLocaleString()} rows)…`;
-          const cutoff = new Date();
-          cutoff.setDate(cutoff.getDate() - 30);
+  // Use setTimeout to let the UI render before heavy parse begins
+  setTimeout(() => {
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: 'greedy',
+      dynamicTyping: false,
+      worker: false,
+      chunk: null,
+      complete(results) {
+        const allRows = results.data;
+        fill.style.width = '70%';
+        plbl.textContent = `Loaded ${allRows.length.toLocaleString()} rows — building hub index…`;
 
-          setTimeout(() => {
-            rawRows = results.data.filter(r => {
-              const d = r.lost_date || r.picked_date || r.shipment_last_updated || '';
-              if (!d) return true; // include if no date
-              try { return new Date(d) >= cutoff; } catch { return true; }
-            });
+        if (!allRows || allRows.length === 0) {
+          st.textContent = '⚠ No rows found. Check the CSV format.';
+          st.className = 'ustatus err';
+          prog.style.display = 'none';
+          toast('No rows found in CSV — check format', 'err');
+          return;
+        }
 
-            fill.style.width = '80%';
-            plbl.textContent = `Building hub index (${rawRows.length.toLocaleString()} rows in window)…`;
+        // Show first row headers for debugging
+        const sampleHeaders = Object.keys(allRows[0] || {}).slice(0, 8).join(', ');
+        console.log('CSV headers sample:', sampleHeaders);
+        console.log('First row:', JSON.stringify(allRows[0]));
 
-            setTimeout(() => {
-              buildHubIndex();
-              fill.style.width = '100%';
-              plbl.textContent = `Done. ${rawRows.length.toLocaleString()} rows loaded.`;
+        // Append to rawRows (supports multiple file uploads)
+        rawRows = rawRows.concat(allRows);
+        fill.style.width = '85%';
 
-              st.textContent = `✓ ${rawRows.length.toLocaleString()} rows loaded (30-day window)`;
-              st.className='ustatus ok';
+        setTimeout(() => {
+          buildHubIndex();
+          fill.style.width = '100%';
+          plbl.textContent = `Done — ${rawRows.length.toLocaleString()} total rows across ${Object.keys(hubIndex).length} hubs`;
 
-              logUpload(file.name, rawRows.length);
-              toast(`${rawRows.length.toLocaleString()} rows loaded from ${file.name}`, 'ok');
+          st.textContent = `✓ ${allRows.length.toLocaleString()} rows added (total: ${rawRows.length.toLocaleString()}) · ${Object.keys(hubIndex).length} hubs`;
+          st.className = 'ustatus ok';
 
-              populateFilters();
-              renderAll();
+          // Also update topbar status
+          const topSt = document.getElementById('top-st');
+          if (topSt) { topSt.textContent = `✓ ${rawRows.length.toLocaleString()} rows`; }
 
-              setTimeout(() => { prog.style.display='none'; fill.style.width='0%'; }, 2000);
-              resolve();
-            }, 50);
-          }, 50);
-        },
-        error(e) { reject(e); }
-      });
+          logUpload(file.name, allRows.length);
+          toast(`✓ ${allRows.length.toLocaleString()} rows loaded from ${file.name}`, 'ok');
+
+          populateFilters();
+          renderAll();
+
+          setTimeout(() => { prog.style.display = 'none'; fill.style.width = '0%'; }, 2500);
+        }, 20);
+      },
+      error(err) {
+        st.textContent = 'Parse error: ' + err.message;
+        st.className = 'ustatus err';
+        prog.style.display = 'none';
+        toast('Parse failed: ' + err.message, 'err');
+      }
     });
-  } catch(e) {
-    st.textContent = 'Error: ' + e.message; st.className='ustatus err';
-    prog.style.display='none';
-    toast('Parse failed: '+e.message,'err');
-  }
+  }, 30);
 }
 
+/* ════════════════════════════════════════════════
+   BUILD HUB INDEX
+════════════════════════════════════════════════ */
 function buildHubIndex() {
   hubIndex = {};
   rawRows.forEach(r => {
-    const node = (r['Node'] || r['node'] || 'Unknown').trim();
+    const node = getField(r, 'Node', 'node', 'NODE') || 'Unknown';
     if (!hubIndex[node]) {
       hubIndex[node] = {
-        node, zone:(r['Zone']||r['zone']||'—').trim(),
-        pod:(r['POD']||r['pod']||'—').trim(),
-        vertical:(r['Vertical']||r['vertical']||'—').trim(),
-        nodeType:(r['Node Type']||r['node_type']||'—').trim(),
-        rows:[], cb:[], odc:[], intransit:[], fwdHigh:[], fwdShort:[], rvpShort:[],
-        rtoPend:[], rvpPend:[], rvpShortRTO:[], allBuckets:[]
+        node,
+        zone:     getField(r,'Zone','zone','ZONE') || '—',
+        pod:      getField(r,'POD','pod','Pod')    || '—',
+        vertical: getField(r,'Vertical','vertical')|| '—',
+        nodeType: getField(r,'Node Type','node_type','NodeType') || '—',
+        rows:[], cb:[], odc:[], intransit:[], fwdHigh:[], fwdShort:[],
+        rvpShort:[], rtoPend:[], rvpPend:[]
       };
     }
     const h = hubIndex[node];
     h.rows.push(r);
-    if(BUCKETS.cb(r))       h.cb.push(r);
-    if(BUCKETS.odc(r))      h.odc.push(r);
-    if(BUCKETS.intransit(r))h.intransit.push(r);
-    if(BUCKETS.fwdHigh(r))  h.fwdHigh.push(r);
-    if(BUCKETS.fwdShort(r)) h.fwdShort.push(r);
-    if(BUCKETS.rvpShort(r)) h.rvpShort.push(r);
-    if(BUCKETS.rtoPend(r))  h.rtoPend.push(r);
-    if(BUCKETS.rvpPend(r))  h.rvpPend.push(r);
-    if(BUCKETS.rvpShort(r)) h.rvpShortRTO.push(r);
+    if (BUCKETS.cb(r))        h.cb.push(r);
+    if (BUCKETS.odc(r))       h.odc.push(r);
+    if (BUCKETS.intransit(r)) h.intransit.push(r);
+    if (BUCKETS.fwdHigh(r))   h.fwdHigh.push(r);
+    if (BUCKETS.fwdShort(r))  h.fwdShort.push(r);
+    if (BUCKETS.rvpShort(r))  h.rvpShort.push(r);
+    if (BUCKETS.rtoPend(r))   h.rtoPend.push(r);
+    if (BUCKETS.rvpPend(r))   h.rvpPend.push(r);
   });
 
-  // Compute scores per hub
+  // Compute scores
   hubSummary = Object.values(hubIndex).map(h => {
+    const n = Math.max(h.rows.length, 1);
     const lossCount = h.cb.length + h.odc.length + h.intransit.length + h.fwdHigh.length + h.fwdShort.length + h.rvpShort.length + h.rvpPend.length;
-    const totalRows = h.rows.length || 1;
-    const lossScore  = Math.min(100, Math.round((lossCount / totalRows) * 100));
-    const pendCount  = h.cb.length + h.intransit.length + h.odc.length;
-    const pendScore  = Math.min(100, Math.round((pendCount / totalRows) * 100));
+    const lossScore = Math.min(100, Math.round((lossCount / n) * 100));
+    const pendScore = Math.min(100, Math.round(((h.cb.length + h.intransit.length + h.odc.length) / n) * 100));
     return {
-      node: h.node, zone: h.zone, pod: h.pod, vertical: h.vertical, nodeType: h.nodeType,
-      cbCount: h.cb.length,
-      odcCount: h.odc.length,
-      itCount: h.intransit.length,
-      fwdHighCount: h.fwdHigh.length,
+      node: h.node, zone: h.zone, pod: h.pod, vertical: h.vertical,
+      cbCount:       h.cb.length,
+      odcCount:      h.odc.length,
+      itCount:       h.intransit.length,
+      fwdHighCount:  h.fwdHigh.length,
       fwdShortCount: h.fwdShort.length,
       rvpShortCount: h.rvpShort.length,
-      rtoPendCount: h.rtoPend.length,
-      rvpPendCount: h.rvpPend.length,
-      totalRows: totalRows,
+      rtoPendCount:  h.rtoPend.length,
+      rvpPendCount:  h.rvpPend.length,
+      totalRows: h.rows.length,
       lossScore, pendScore,
       weightedScore: calcW({ lossScore, pendScore })
     };
-  }).sort((a,b) => b.weightedScore - a.weightedScore);
+  }).sort((a, b) => b.weightedScore - a.weightedScore);
 }
 
 function calcW(h) {
   let base = Math.round(h.lossScore * (fraudW/100) + h.pendScore * (pendW/100));
-  scoringRules.filter(r=>r.status==='active').forEach(r => {
+  scoringRules.filter(r => r.status === 'active').forEach(r => {
     const val = h[r.metric] !== undefined ? h[r.metric] : base;
     const thr = parseFloat(r.threshold);
-    const pass = r.cond==='gt'?val>thr : r.cond==='gte'?val>=thr : r.cond==='lt'?val<thr : val<=thr;
-    if(pass) base = Math.min(100, Math.round(base * parseFloat(r.multiplier)));
+    const ok = r.cond==='gt'?val>thr : r.cond==='gte'?val>=thr : r.cond==='lt'?val<thr : val<=thr;
+    if (ok) base = Math.min(100, Math.round(base * parseFloat(r.multiplier)));
   });
   return base;
 }
 
 /* ════════════════════════════════════════════════
-   POPULATE FILTERS FROM DATA
+   POPULATE FILTERS FROM REAL DATA
 ════════════════════════════════════════════════ */
 function populateFilters() {
-  const zones    = [...new Set(rawRows.map(r=>(r['Zone']||r['zone']||'').trim()).filter(Boolean))].sort();
-  const pods     = [...new Set(rawRows.map(r=>(r['POD']||r['pod']||'').trim()).filter(Boolean))].sort();
-  const lb1s     = [...new Set(rawRows.map(r=>(r['Loss Bucket 1']||r['Loss_Bucket_1']||'').trim()).filter(Boolean))].sort();
-  const lb2s     = [...new Set(rawRows.map(r=>(r['Loss Bucket 2']||r['Loss_Bucket_2']||'').trim()).filter(Boolean))].sort();
-  const months   = [...new Set(rawRows.map(r=>{
-    const d=r.lost_date||r.picked_date||''; if(!d)return null;
-    try{const dt=new Date(d);return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;}catch{return null;}
-  }).filter(Boolean))].sort().reverse();
+  const uniq = (arr) => [...new Set(arr.filter(Boolean))].sort();
+  const zones   = uniq(rawRows.map(r => getField(r,'Zone','zone')));
+  const pods    = uniq(rawRows.map(r => getField(r,'POD','pod','Pod')));
+  const lb1s    = uniq(rawRows.map(r => getField(r,'Loss Bucket 1','Loss_Bucket_1')));
+  const lb2s    = uniq(rawRows.map(r => getField(r,'Loss Bucket 2','Loss_Bucket_2')));
+  const months  = uniq(rawRows.map(r => {
+    const d = getField(r,'lost_date','picked_date','shipment_last_updated');
+    if (!d) return null;
+    try { const dt = new Date(d); return isNaN(dt) ? null : `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`; }
+    catch { return null; }
+  })).reverse();
 
-  fillSel('p-zone', zones);
-  fillSel('p-pod', pods);
-  fillSel('rto-zone', zones);
-  fillSel('fr-zone', zones);
-  fillSel('fr-lb1', lb1s);
-  fillSel('fr-month', months);
+  fillSel('p-zone', zones); fillSel('p-pod', pods);
+  fillSel('rto-zone', zones); fillSel('fr-zone', zones);
+  fillSel('fr-lb1', lb1s); fillSel('fr-month', months);
   fillSel('sc-zone', zones);
 
-  // LB2 for fraud detail
   const lb2sel = document.getElementById('fr-lb2');
-  if(lb2sel){ lb2sel.innerHTML=''; lb2s.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;lb2sel.appendChild(o);}); }
+  if (lb2sel) { lb2sel.innerHTML = '<option value="">— select bucket —</option>'; lb2s.forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; lb2sel.appendChild(o); }); }
 
-  // Trend filter
-  const tdims = {Zone:zones, Node:Object.keys(hubIndex).slice(0,20), POD:pods, Vertical:[...new Set(rawRows.map(r=>(r['Vertical']||'').trim()).filter(Boolean))].sort()};
-  populateTrendFilter();
+  populateTFilter();
 }
 
 function fillSel(id, items) {
-  const sel=document.getElementById(id); if(!sel)return;
-  const cur=sel.value;
-  sel.innerHTML='<option value="">All</option>';
-  items.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);});
-  if(cur&&items.includes(cur)) sel.value=cur;
+  const el = document.getElementById(id); if (!el) return;
+  const cur = el.value;
+  el.innerHTML = '<option value="">All</option>';
+  items.forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; el.appendChild(o); });
+  if (cur && items.includes(cur)) el.value = cur;
 }
 
-function populateTrendFilter() {
+function populateTFilter() {
   const dim = trendDimSt;
   const items = dim==='Node' ? Object.keys(hubIndex).slice(0,30) :
-                dim==='Zone' ? [...new Set(rawRows.map(r=>(r['Zone']||'').trim()).filter(Boolean))].sort() :
-                dim==='POD'  ? [...new Set(rawRows.map(r=>(r['POD']||'').trim()).filter(Boolean))].sort() :
-                [...new Set(rawRows.map(r=>(r['Vertical']||'').trim()).filter(Boolean))].sort();
+                dim==='Zone' ? [...new Set(rawRows.map(r=>getField(r,'Zone','zone')).filter(Boolean))].sort() :
+                dim==='POD'  ? [...new Set(rawRows.map(r=>getField(r,'POD','pod','Pod')).filter(Boolean))].sort() :
+                [...new Set(rawRows.map(r=>getField(r,'Vertical','vertical')).filter(Boolean))].sort();
   fillSel('t-filter', items);
 }
 
 /* ════════════════════════════════════════════════
    HELPERS
 ════════════════════════════════════════════════ */
-const bc  = s => s>70?'#f43f5e':s>40?'#f59e0b':'#10b981';
+const bc  = s => s>70?'#dc2626':s>40?'#d97706':'#059669';
 const rbc = r => r<=50?'rb-r':r<=90?'rb-a':'rb-g';
-const pc  = s => s>70?'p-rose':s>40?'p-amber':'p-emerald';
+const pc  = s => s>70?'p-crimson':s>40?'p-amber':'p-emerald';
 const rl  = s => s>70?'High':s>40?'Med':'Low';
 const fmt = n => Number(n||0).toLocaleString('en-IN');
 
-function sw(id,el){
-  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active'); document.getElementById('tab-'+id).classList.add('active');
-  if(id==='trend') setTimeout(renderTrend,60);
-}
+function sw(id,el){ document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active')); el.classList.add('active'); document.getElementById('tab-'+id).classList.add('active'); if(id==='trend') setTimeout(renderTrend,60); }
 
-function ft(id,q){
-  document.querySelectorAll('#'+id+' tr').forEach(tr=>{
-    tr.style.display=tr.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';
-  });
-}
+function ft(id,q){ document.querySelectorAll('#'+id+' tr').forEach(tr=>{ tr.style.display = tr.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'; }); }
 
 function setSt(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
 
-function toast(msg,type=''){
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.className='show'+(type?' '+type:'');
-  setTimeout(()=>el.className='',3500);
-}
+function toast(msg,type='') { const el=document.getElementById('toast'); el.textContent=msg; el.className='show'+(type?' '+type:''); setTimeout(()=>el.className='',4000); }
 
 function showLoader(t){ document.getElementById('gloader').classList.remove('gone'); document.getElementById('ltext').textContent=t||'Loading…'; }
-function hideLoader(){ setTimeout(()=>document.getElementById('gloader').classList.add('gone'),250); }
+function hideLoader(){ setTimeout(()=>document.getElementById('gloader').classList.add('gone'),200); }
+function setSync(s,l){ document.getElementById('sync-dot').className='sync-dot'+(s==='warn'?' warn':s==='error'?' error':''); document.getElementById('sync-lbl').textContent=l; }
 
-function setSync(s,l){
-  const d=document.getElementById('sync-dot'), lb=document.getElementById('sync-lbl');
-  d.className='sync-pulse'+(s==='warn'?' warn':s==='error'?' error':'');
-  lb.textContent=l;
-}
-
-function dlCSV(content,name){
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([content],{type:'text/csv'}));
-  a.download=name; a.click();
-}
-
-function dlTbl(tbodyId,name){
-  const rows=document.querySelectorAll('#'+tbodyId+' tr');
-  const lines=[];
-  rows.forEach(tr=>{
-    const cells=Array.from(tr.querySelectorAll('td')).map(td=>td.textContent.trim().replace(/,/g,''));
-    if(cells.length) lines.push(cells.join(','));
-  });
-  dlCSV(lines.join('\n'),name);
-}
+function dlCSV(content,name){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type:'text/csv'})); a.download=name; a.click(); }
+function dlTbl(tbodyId,name){ const rows=document.querySelectorAll('#'+tbodyId+' tr'); const lines=[]; rows.forEach(tr=>{ const cells=Array.from(tr.querySelectorAll('td')).map(td=>td.textContent.trim().replace(/,/g,'')); if(cells.length) lines.push(cells.join(',')); }); dlCSV(lines.join('\n'),name); }
 
 function updateMeta(){
   const now=new Date(), cutoff=new Date(now-30*24*60*60*1000);
-  const fmt2=d=>d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
-  setSt('date-range-chip',`${fmt2(cutoff)} – ${fmt2(now)}, ${now.getFullYear()}`);
-  setSt('topbar-sub',`${rawRows.length?rawRows.length.toLocaleString()+' rows · ':''}Last 30 days`);
-  const nr=new Date(now); nr.setDate(nr.getDate()+(7-nr.getDay()));
-  setSt('next-rpt', nr.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}));
-}
-
-/* ════════════════════════════════════════════════
-   AGGREGATE (group rows by dimension, apply filters)
-════════════════════════════════════════════════ */
-function getPendencyRows(subType, filters={}) {
-  let rows = rawRows.filter(r => BUCKETS[subType](r));
-  if(filters.zone) rows = rows.filter(r=>(r['Zone']||r['zone']||'').trim()===filters.zone);
-  if(filters.pod)  rows = rows.filter(r=>(r['POD']||r['pod']||'').trim()===filters.pod);
-  if(filters.minAge) rows = rows.filter(r=>parseInt(r['ageing']||r['Max Ageing']||0)>=filters.minAge);
-  return rows;
-}
-
-function groupByDim(rows, dim) {
-  const m = {};
-  rows.forEach(r => {
-    const key = (r[dim]||'Unknown').trim() || 'Unknown';
-    if(!m[key]) m[key]={key, zone:(r['Zone']||'').trim(), pod:(r['POD']||'').trim(), count:0, totalProdVal:0, totalDebitVal:0, rows:[]};
-    m[key].count++;
-    m[key].totalProdVal += parseFloat(r['product_value']||0);
-    m[key].totalDebitVal+= parseFloat(r['debit_value']||0);
-    m[key].rows.push(r);
-  });
-  return Object.values(m).sort((a,b)=>b.count-a.count);
+  const f2=d=>d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+  setSt('date-chip',`${f2(cutoff)} – ${f2(now)} ${now.getFullYear()}`);
+  setSt('topbar-sub', rawRows.length ? `${rawRows.length.toLocaleString()} rows · ${Object.keys(hubIndex).length} hubs` : 'Upload CSV to begin');
+  const nr=new Date(now); nr.setDate(nr.getDate()+(7-nr.getDay())); setSt('next-rpt', nr.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}));
 }
 
 /* ════════════════════════════════════════════════
    RENDER ALL
 ════════════════════════════════════════════════ */
-function renderAll(){
-  updateMeta();
-  updateKPIs();
-  renderPendency();
-  renderRTO();
-  renderFraud();
-  renderSC();
-  loadHist();
-}
+function renderAll() { updateMeta(); updateKPIs(); renderPendency(); renderRTO(); renderFraud(); renderSC(); renderHist(); }
 
-function updateKPIs(){
-  const zf=document.getElementById('p-zone')?.value||'';
-  const filt = r => !zf || (r['Zone']||'').trim()===zf;
+function updateKPIs() {
+  const zf = document.getElementById('p-zone')?.value||'';
+  const filt = r => !zf || getField(r,'Zone','zone')===zf;
   setSt('kp-cb',    fmt(rawRows.filter(r=>BUCKETS.cb(r)&&filt(r)).length));
   setSt('kp-odc',   fmt(rawRows.filter(r=>BUCKETS.odc(r)&&filt(r)).length));
   setSt('kp-it',    fmt(rawRows.filter(r=>BUCKETS.intransit(r)&&filt(r)).length));
@@ -1465,183 +1238,151 @@ function updateKPIs(){
   setSt('kp-fs',    fmt(rawRows.filter(r=>BUCKETS.fwdShort(r)&&filt(r)).length));
   setSt('kp-rs',    fmt(rawRows.filter(r=>BUCKETS.rvpShort(r)&&filt(r)).length));
   setSt('kp-total', fmt(rawRows.length));
-
-  setSt('kr-rto',  fmt(rawRows.filter(r=>BUCKETS.rtoPend(r)).length));
-  setSt('kr-rvp',  fmt(rawRows.filter(r=>BUCKETS.rvpPend(r)).length));
-  setSt('kr-rs',   fmt(rawRows.filter(r=>BUCKETS.rvpShort(r)).length));
-  const crit = hubSummary.filter(h=>h.weightedScore>70).length;
-  setSt('kr-crit', crit);
-
+  setSt('kr-rto',   fmt(rawRows.filter(r=>BUCKETS.rtoPend(r)).length));
+  setSt('kr-rvp',   fmt(rawRows.filter(r=>BUCKETS.rvpPend(r)).length));
+  setSt('kr-rs',    fmt(rawRows.filter(r=>BUCKETS.rvpShort(r)).length));
+  setSt('kr-crit',  hubSummary.filter(h=>h.weightedScore>70).length);
   const totalLoss = rawRows.filter(r=>BUCKETS.cb(r)||BUCKETS.odc(r)||BUCKETS.intransit(r)||BUCKETS.fwdHigh(r)||BUCKETS.fwdShort(r)||BUCKETS.rvpShort(r)||BUCKETS.rvpPend(r)).length;
   setSt('kf-total', fmt(totalLoss));
-  setSt('kf-hubs', Object.values(hubIndex).filter(h=>h.cb.length+h.odc.length+h.fwdShort.length>0).length);
-  setSt('sc-hubs', hubSummary.length);
+  setSt('kf-hubs',  Object.values(hubIndex).filter(h=>h.cb.length+h.odc.length+h.fwdShort.length>0).length);
+  setSt('kf-fw',    fraudW+'%');
+  setSt('sc-hubs',  hubSummary.length);
   setSt('sc-rules', scoringRules.filter(r=>r.status==='active').length);
-  setSt('kf-fw', fraudW+'%');
-  setSt('sc-fw-v', fraudW+'%');
-  setSt('sc-pw-v', pendW+'%');
+  setSt('sc-fw-v',  fraudW+'%'); setSt('sc-pw-v', pendW+'%');
+  const lb2counts={}; rawRows.forEach(r=>{ const lb=getField(r,'Loss Bucket 2','Loss_Bucket_2'); if(lb) lb2counts[lb]=(lb2counts[lb]||0)+1; });
+  const top=Object.entries(lb2counts).sort((a,b)=>b[1]-a[1])[0]; setSt('kf-top', top ? top[0].substring(0,18)+'…' : '—');
+}
 
-  // Top loss bucket
-  const lb2counts={};
-  rawRows.forEach(r=>{const lb=(r['Loss Bucket 2']||r['Loss_Bucket_2']||'').trim();if(lb)lb2counts[lb]=(lb2counts[lb]||0)+1;});
-  const top=Object.entries(lb2counts).sort((a,b)=>b[1]-a[1])[0];
-  setSt('kf-top', top?top[0].substring(0,18)+'…':'—');
+/* ── GROUPING ── */
+function groupBy(rows, dim) {
+  const m = {};
+  rows.forEach(r => {
+    const key = getField(r, dim, dim.toLowerCase()) || 'Unknown';
+    if (!m[key]) m[key] = { key, zone:getField(r,'Zone','zone'), pod:getField(r,'POD','pod','Pod'), count:0, prodVal:0, debitVal:0, rows:[] };
+    m[key].count++;
+    m[key].prodVal  += parseFloat(getField(r,'product_value','Product_Value')||0);
+    m[key].debitVal += parseFloat(getField(r,'debit_value','Debit_Value')||0);
+    m[key].rows.push(r);
+  });
+  return Object.values(m).sort((a,b) => b.count - a.count);
 }
 
 /* ── PENDENCY ── */
-function pSub(el,v){ el.parentElement.querySelectorAll('.snb').forEach(b=>b.classList.remove('active')); el.classList.add('active'); pSubSt=v; renderPendency(); }
-function pGrp(el,v){ el.parentElement.querySelectorAll('.snb').forEach(b=>b.classList.remove('active')); el.classList.add('active'); pGrpSt=v; renderPendency(); }
+function pSub(el,v){ el.parentElement.querySelectorAll('.snb').forEach(b=>b.classList.remove('active')); el.classList.add('active'); pSubSt=v; setSt('p-tbl-title', BUCKET_META[v].title+' · '+pGrpSt+'-level'); setSt('p-tbl-sub', BUCKET_META[v].sub); renderPendency(); }
+function pGrp(el,v){ el.parentElement.querySelectorAll('.snb').forEach(b=>b.classList.remove('active')); el.classList.add('active'); pGrpSt=v; setSt('p-tbl-title', BUCKET_META[pSubSt].title+' · '+v+'-level'); renderPendency(); }
 
-function renderPendency(){
+function renderPendency() {
   updateKPIs();
   const zf  = document.getElementById('p-zone')?.value||'';
   const pf  = document.getElementById('p-pod')?.value||'';
   const age = parseInt(document.getElementById('p-age')?.value)||0;
-  const lbl = BUCKET_LABELS[pSubSt];
-  setSt('p-tbl-title', `${lbl.title} · ${pGrpSt}-level view`);
-  setSt('p-tbl-sub', lbl.sub);
-
-  const rows = getPendencyRows(pSubSt, {zone:zf,pod:pf,minAge:age});
-  const grouped = groupByDim(rows, pGrpSt);
-
+  let rows = rawRows.filter(r => BUCKETS[pSubSt](r));
+  if (zf) rows = rows.filter(r => getField(r,'Zone','zone')===zf);
+  if (pf) rows = rows.filter(r => getField(r,'POD','pod','Pod')===pf);
+  if (age > 0) rows = rows.filter(r => parseFloat(getField(r,'ageing','Max Ageing','it_ageing')||0) >= age);
+  const grouped = groupBy(rows, pGrpSt);
   const isHub = pGrpSt==='Node';
-  document.getElementById('p-thead').innerHTML=`<tr>
-    <th style="width:36px">#</th>
-    <th style="width:130px">${pGrpSt}</th>
-    <th style="width:70px">Zone</th>
-    <th style="width:65px">POD</th>
-    <th style="width:70px">Count</th>
-    <th style="width:90px">Prod Value</th>
-    <th style="width:90px">Debit Value</th>
-    <th style="width:80px">Avg Ageing</th>
+
+  document.getElementById('p-thead').innerHTML = `<tr>
+    <th style="width:36px">#</th><th style="width:130px">${pGrpSt}</th><th style="width:70px">Zone</th><th style="width:65px">POD</th>
+    <th style="width:70px">Count</th><th style="width:95px">Prod Value</th><th style="width:95px">Debit Value</th><th style="width:80px">Avg Ageing</th>
     ${isHub?'<th style="width:90px">Score</th>':''}
   </tr>`;
 
-  document.getElementById('p-tbody').innerHTML = grouped.slice(0,150).map((g,i)=>{
-    const avgAge = g.rows.length ? Math.round(g.rows.reduce((s,r)=>s+parseFloat(r['ageing']||r['Max Ageing']||0),0)/g.rows.length) : 0;
-    const ws = hubSummary.find(h=>h.node===g.key)?.weightedScore||0;
+  if (!grouped.length) { document.getElementById('p-tbody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--txt-muted)">No data matches current filters</td></tr>`; return; }
+
+  document.getElementById('p-tbody').innerHTML = grouped.slice(0,200).map((g,i) => {
+    const avgAge = g.rows.length ? Math.round(g.rows.reduce((s,r) => s+parseFloat(getField(r,'ageing','Max Ageing')||0),0)/g.rows.length) : 0;
+    const ws = hubSummary.find(h=>h.node===g.key)?.weightedScore || 0;
     return `<tr>
       <td><span class="rbadge ${rbc(i+1)}">${i+1}</span></td>
-      <td style="font-weight:600;color:var(--txt-hi)">${g.key}</td>
-      <td><span class="pill p-indigo">${g.zone||'—'}</span></td>
+      <td style="font-weight:700;color:var(--txt-hi)">${g.key}</td>
+      <td><span class="pill p-blue">${g.zone||'—'}</span></td>
       <td style="font-size:10px;color:var(--txt-muted)">${g.pod||'—'}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${g.count>50?'var(--rose-l)':g.count>20?'var(--amber-l)':'var(--txt-main)'}">${fmt(g.count)}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:10px">₹${fmt(Math.round(g.totalProdVal))}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${g.totalDebitVal>0?'var(--rose-l)':'var(--txt-muted)'}">₹${fmt(Math.round(g.totalDebitVal))}</td>
-      <td style="color:${avgAge>10?'var(--rose-l)':avgAge>5?'var(--amber-l)':'var(--txt-main)'};font-weight:600">${avgAge}d</td>
-      ${isHub?`<td><div style="font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;color:${bc(ws)}">${ws}</div><div class="sbar-wrap"><div class="sbar" style="width:${ws}%;background:${bc(ws)}"></div></div></td>`:''}
+      <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${g.count>50?'var(--crimson)':g.count>20?'var(--amber)':'var(--txt-main)'}">${fmt(g.count)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:10px">₹${fmt(Math.round(g.prodVal))}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${g.debitVal>0?'var(--crimson)':'var(--txt-muted)'}">₹${fmt(Math.round(g.debitVal))}</td>
+      <td style="font-weight:700;color:${avgAge>10?'var(--crimson)':avgAge>5?'var(--amber)':'var(--txt-main)'}">${avgAge}d</td>
+      ${isHub?`<td><div style="font-weight:800;font-family:'JetBrains Mono',monospace;font-size:12px;color:${bc(ws)}">${ws}</div><div class="sbar-wrap"><div class="sbar" style="width:${ws}%;background:${bc(ws)}"></div></div></td>`:''}
     </tr>`;
   }).join('');
 }
 
 /* ── RTO & RVP ── */
-function rtoSub(el,v){ el.parentElement.querySelectorAll('.snb').forEach(b=>b.classList.remove('active')); el.classList.add('active'); rtoSubSt=v; renderRTO(); }
+function rtoSub(el,v){ el.parentElement.querySelectorAll('.snb').forEach(b=>b.classList.remove('active')); el.classList.add('active'); rtoSubSt=v; setSt('rto-tbl-title',RTO_META[v].title+' · '+rtoGrpSt+'-level'); setSt('rto-tbl-sub',RTO_META[v].sub); renderRTO(); }
 function rtoGrp(el,v){ el.parentElement.querySelectorAll('.snb').forEach(b=>b.classList.remove('active')); el.classList.add('active'); rtoGrpSt=v; renderRTO(); }
 
-function renderRTO(){
+function renderRTO() {
   const zf = document.getElementById('rto-zone')?.value||'';
-  const lbl = RTO_LABELS[rtoSubSt];
-  setSt('rto-tbl-title', `${lbl.title} · ${rtoGrpSt}-level`);
-  setSt('rto-tbl-sub', lbl.sub);
-
-  const bucketKey = rtoSubSt==='rto'?'rtoPend' : rtoSubSt==='rvp'?'rvpPend' : 'rvpShort';
-  let rows = rawRows.filter(r=>BUCKETS[bucketKey](r));
-  if(zf) rows = rows.filter(r=>(r['Zone']||'').trim()===zf);
-  const grouped = groupByDim(rows, rtoGrpSt);
+  const bk = rtoSubSt==='rto'?'rtoPend':rtoSubSt==='rvp'?'rvpPend':'rvpShort';
+  let rows = rawRows.filter(r => BUCKETS[bk](r));
+  if (zf) rows = rows.filter(r => getField(r,'Zone','zone')===zf);
+  const grouped = groupBy(rows, rtoGrpSt);
 
   document.getElementById('rto-thead').innerHTML=`<tr>
-    <th style="width:36px">#</th>
-    <th style="width:130px">${rtoGrpSt}</th>
-    <th style="width:70px">Zone</th>
-    <th style="width:70px">Count</th>
-    <th style="width:90px">Prod Value</th>
-    <th style="width:90px">Debit Value</th>
-    <th style="width:80px">Risk</th>
+    <th style="width:36px">#</th><th style="width:130px">${rtoGrpSt}</th><th style="width:70px">Zone</th>
+    <th style="width:70px">Count</th><th style="width:95px">Prod Value</th><th style="width:95px">Debit Value</th><th style="width:80px">Risk</th>
   </tr>`;
 
-  document.getElementById('rto-tbody').innerHTML = grouped.slice(0,120).map((g,i)=>{
-    const ws = hubSummary.find(h=>h.node===g.key)?.weightedScore||Math.min(100,Math.round(g.count/10));
+  if (!grouped.length) { document.getElementById('rto-tbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--txt-muted)">No data for current filters</td></tr>`; return; }
+
+  document.getElementById('rto-tbody').innerHTML = grouped.slice(0,150).map((g,i) => {
+    const ws = hubSummary.find(h=>h.node===g.key)?.weightedScore || Math.min(100,Math.round(g.count/5));
     return `<tr>
       <td><span class="rbadge ${rbc(i+1)}">${i+1}</span></td>
-      <td style="font-weight:600;color:var(--txt-hi)">${g.key}</td>
-      <td><span class="pill p-indigo">${g.zone||'—'}</span></td>
-      <td style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${g.count>50?'var(--rose-l)':g.count>20?'var(--amber-l)':'var(--txt-main)'}">${fmt(g.count)}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:10px">₹${fmt(Math.round(g.totalProdVal))}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${g.totalDebitVal>0?'var(--rose-l)':'var(--txt-muted)'}">₹${fmt(Math.round(g.totalDebitVal))}</td>
+      <td style="font-weight:700;color:var(--txt-hi)">${g.key}</td>
+      <td><span class="pill p-blue">${g.zone||'—'}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${g.count>50?'var(--crimson)':g.count>20?'var(--amber)':'var(--txt-main)'}">${fmt(g.count)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:10px">₹${fmt(Math.round(g.prodVal))}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${g.debitVal>0?'var(--crimson)':'var(--txt-muted)'}">₹${fmt(Math.round(g.debitVal))}</td>
       <td><span class="pill ${pc(ws)}">${rl(ws)}</span></td>
     </tr>`;
   }).join('');
 }
 
-/* ── FRAUD / LOSS BUCKETS ── */
-function renderFraud(){
+/* ── FRAUD ── */
+function renderFraud() {
   const mf  = document.getElementById('fr-month')?.value||'';
   const lb1 = document.getElementById('fr-lb1')?.value||'';
   const zf  = document.getElementById('fr-zone')?.value||'';
-
   let rows = rawRows;
-  if(zf)  rows = rows.filter(r=>(r['Zone']||'').trim()===zf);
-  if(lb1) rows = rows.filter(r=>(r['Loss Bucket 1']||r['Loss_Bucket_1']||'').trim()===lb1);
-  if(mf)  rows = rows.filter(r=>{
-    const d=r.lost_date||r.picked_date||''; if(!d)return false;
-    try{const dt=new Date(d);return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`===mf;}catch{return false;}
-  });
+  if (zf)  rows = rows.filter(r=>getField(r,'Zone','zone')===zf);
+  if (lb1) rows = rows.filter(r=>getField(r,'Loss Bucket 1','Loss_Bucket_1')===lb1);
+  if (mf)  rows = rows.filter(r=>{ const d=getField(r,'lost_date','picked_date'); if(!d) return false; try{ const dt=new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`===mf; }catch{return false;} });
 
-  // Group by Loss Bucket 2
-  const lb2Map={};
-  rows.forEach(r=>{
-    const lb=(r['Loss Bucket 2']||r['Loss_Bucket_2']||'Other').trim();
-    lb2Map[lb]=(lb2Map[lb]||0)+1;
-  });
-  const sorted = Object.entries(lb2Map).sort((a,b)=>b[1]-a[1]);
+  const lb2map = {};
+  rows.forEach(r => { const lb=getField(r,'Loss Bucket 2','Loss_Bucket_2')||'Unknown'; lb2map[lb]=(lb2map[lb]||0)+1; });
+  const sorted = Object.entries(lb2map).sort((a,b)=>b[1]-a[1]);
   const maxV = sorted[0]?.[1]||1;
 
   document.getElementById('fr-overview-body').innerHTML = sorted.slice(0,15).map(([lb,cnt])=>`
     <div class="frow">
-      <span class="frow-name" title="${lb}">${lb.length>28?lb.substring(0,28)+'…':lb}</span>
+      <span class="frow-name" title="${lb}">${lb.length>30?lb.substring(0,30)+'…':lb}</span>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
         <div class="frow-bar-bg"><div class="frow-bar-fill" style="width:${Math.round(cnt/maxV*100)}%"></div></div>
         <span class="frow-count">${fmt(cnt)}</span>
       </div>
     </div>`).join('');
-
   renderFraudDetail();
 }
 
-function renderFraudDetail(){
-  const lb2sel = document.getElementById('fr-lb2');
-  const lb2 = lb2sel?.value||'';
-  if(!lb2){ document.getElementById('fr-detail-body').innerHTML='<div style="font-size:11px;color:var(--txt-muted)">Select a Loss Bucket 2 above.</div>'; return; }
-
-  const mf=document.getElementById('fr-month')?.value||'';
+function renderFraudDetail() {
+  const lb2 = document.getElementById('fr-lb2')?.value||'';
+  if (!lb2) { document.getElementById('fr-detail-body').innerHTML='<div style="font-size:11px;color:var(--txt-muted)">Select a bucket above</div>'; return; }
   const zf=document.getElementById('fr-zone')?.value||'';
-  let rows = rawRows.filter(r=>(r['Loss Bucket 2']||r['Loss_Bucket_2']||'').trim()===lb2);
-  if(zf) rows=rows.filter(r=>(r['Zone']||'').trim()===zf);
-  if(mf) rows=rows.filter(r=>{const d=r.lost_date||r.picked_date||'';if(!d)return false;try{const dt=new Date(d);return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`===mf;}catch{return false;}});
-
-  const grp = groupByDim(rows,'Node').slice(0,12);
+  let rows = rawRows.filter(r=>getField(r,'Loss Bucket 2','Loss_Bucket_2')===lb2);
+  if(zf) rows=rows.filter(r=>getField(r,'Zone','zone')===zf);
+  const grp = groupBy(rows,'Node').slice(0,12);
   const mx = grp[0]?.count||1;
-  document.getElementById('fr-detail-body').innerHTML =
-    `<div style="font-size:10px;font-weight:700;color:var(--txt-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Top hubs — ${lb2.substring(0,30)}</div>`+
-    grp.map(g=>`<div class="frow">
-      <span class="frow-name">${g.key}</span>
-      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-        <div class="frow-bar-bg" style="width:90px"><div class="frow-bar-fill" style="width:${Math.round(g.count/mx*100)}%"></div></div>
-        <span class="frow-count">${fmt(g.count)}</span>
-      </div></div>`).join('');
+  document.getElementById('fr-detail-body').innerHTML = `<div style="font-size:10px;font-weight:700;color:var(--txt-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Top hubs — ${lb2.substring(0,35)}</div>`+
+    grp.map(g=>`<div class="frow"><span class="frow-name">${g.key}</span><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div class="frow-bar-bg" style="width:90px"><div class="frow-bar-fill" style="width:${Math.round(g.count/mx*100)}%"></div></div><span class="frow-count">${fmt(g.count)}</span></div></div>`).join('');
 }
 
-function dlFraud(n){
-  const lb1=document.getElementById('fr-lb1')?.value||'';
-  const mf=document.getElementById('fr-month')?.value||'';
-  const zf=document.getElementById('fr-zone')?.value||'';
-  let rows=rawRows;
-  if(zf) rows=rows.filter(r=>(r['Zone']||'').trim()===zf);
-  if(lb1)rows=rows.filter(r=>(r['Loss Bucket 1']||r['Loss_Bucket_1']||'').trim()===lb1);
-  if(mf) rows=rows.filter(r=>{const d=r.lost_date||r.picked_date||'';if(!d)return false;try{const dt=new Date(d);return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`===mf;}catch{return false;}});
-
-  const hubs=groupByDim(rows,'Node').slice(0,n);
-  dlCSV(['Hub,Zone,POD,Count,ProdValue,DebitValue',...hubs.map(h=>`${h.key},${h.zone},${h.pod},${h.count},${Math.round(h.totalProdVal)},${Math.round(h.totalDebitVal)}`)].join('\n'),`fraud_bottom${n}${mf?'_'+mf:''}${zf?'_'+zf:''}.csv`);
+function dlFraud(n) {
+  const zf=document.getElementById('fr-zone')?.value||'', lb1=document.getElementById('fr-lb1')?.value||'';
+  let rows=rawRows; if(zf)rows=rows.filter(r=>getField(r,'Zone','zone')===zf); if(lb1)rows=rows.filter(r=>getField(r,'Loss Bucket 1','Loss_Bucket_1')===lb1);
+  const hubs=groupBy(rows,'Node').slice(0,n);
+  dlCSV(['Hub,Zone,POD,Count,ProdValue,DebitValue',...hubs.map(h=>`${h.key},${h.zone},${h.pod},${h.count},${Math.round(h.prodVal)},${Math.round(h.debitVal)}`)].join('\n'),`fraud_bottom${n}${zf?'_'+zf:''}.csv`);
   toast(`Downloaded bottom ${n} hubs`,'ok');
 }
 
@@ -1649,22 +1390,18 @@ function dlFraud(n){
 function scLvl(el,v){ el.parentElement.querySelectorAll('.snb').forEach(b=>b.classList.remove('active')); el.classList.add('active'); scLvlSt=v; renderSC(); }
 function scMode(el,v){ el.parentElement.querySelectorAll('.snb').forEach(b=>b.classList.remove('active')); el.classList.add('active'); scModeSt=v; renderSC(); }
 
-function getSCData(){
+function getSCData() {
   const zf=document.getElementById('sc-zone')?.value||'';
   let data;
-  if(scLvlSt==='Node'){
-    data = hubSummary.filter(h=>!zf||h.zone===zf).map(h=>({...h,weightedScore:calcW(h)}));
+  if (scLvlSt==='Node') {
+    data=hubSummary.filter(h=>!zf||h.zone===zf).map(h=>({...h,weightedScore:calcW(h)}));
   } else {
     const m={};
-    rawRows.filter(r=>!zf||(r['Zone']||'').trim()===zf).forEach(r=>{
-      const key=(r[scLvlSt]||'—').trim();
-      if(!m[key])m[key]={node:key,zone:(r['Zone']||'').trim(),pod:(r['POD']||'').trim(),cbCount:0,odcCount:0,itCount:0,fwdShortCount:0,rvpShortCount:0,totalRows:0};
+    rawRows.filter(r=>!zf||getField(r,'Zone','zone')===zf).forEach(r=>{
+      const key=getField(r,scLvlSt,scLvlSt.toLowerCase())||'—';
+      if(!m[key])m[key]={node:key,zone:getField(r,'Zone','zone'),pod:getField(r,'POD','pod','Pod'),cbCount:0,odcCount:0,itCount:0,fwdShortCount:0,rvpShortCount:0,totalRows:0};
       const h=m[key]; h.totalRows++;
-      if(BUCKETS.cb(r))       h.cbCount++;
-      if(BUCKETS.odc(r))      h.odcCount++;
-      if(BUCKETS.intransit(r))h.itCount++;
-      if(BUCKETS.fwdShort(r)) h.fwdShortCount++;
-      if(BUCKETS.rvpShort(r)) h.rvpShortCount++;
+      if(BUCKETS.cb(r))h.cbCount++; if(BUCKETS.odc(r))h.odcCount++; if(BUCKETS.intransit(r))h.itCount++; if(BUCKETS.fwdShort(r))h.fwdShortCount++; if(BUCKETS.rvpShort(r))h.rvpShortCount++;
     });
     data=Object.values(m).map(h=>{
       const lossScore=Math.min(100,Math.round(((h.cbCount+h.odcCount+h.itCount+h.fwdShortCount+h.rvpShortCount)/Math.max(h.totalRows,1))*100));
@@ -1675,253 +1412,146 @@ function getSCData(){
   return data.sort((a,b)=>b.weightedScore-a.weightedScore);
 }
 
-function renderSC(){
+function renderSC() {
   const n=parseInt(document.getElementById('sc-n')?.value)||50;
   const all=getSCData();
   const show=scModeSt==='top'?[...all].reverse().slice(0,n):scModeSt==='bottom'?all.slice(0,n):all;
-  setSt('sc-tbl-title',`${scLvlSt} scorecard — ${scModeSt} ${n}`);
-  setSt('sc-formula',`Formula: ${fraudW}% loss/fraud weight + ${pendW}% pendency · ${scoringRules.filter(r=>r.status==='active').length} active rule(s)`);
-
+  setSt('sc-tbl-title',scLvlSt+' scorecard — '+scModeSt+' '+n);
+  setSt('sc-formula','Formula: '+fraudW+'% loss + '+pendW+'% pendency · '+scoringRules.filter(r=>r.status==='active').length+' active rule(s)');
+  if(!show.length){ document.getElementById('sc-tbody').innerHTML=`<tr><td colspan="13" style="text-align:center;padding:32px;color:var(--txt-muted)">Upload CSV to see rankings</td></tr>`; updateActivePills(); return; }
   document.getElementById('sc-tbody').innerHTML=show.map((h,i)=>`
     <tr>
       <td><span class="rbadge ${rbc(i+1)}">${i+1}</span></td>
       <td style="font-weight:700;color:var(--txt-hi)">${h.node||h.key||'—'}</td>
-      <td><span class="pill p-indigo">${h.zone||'—'}</span></td>
+      <td><span class="pill p-blue">${h.zone||'—'}</span></td>
       <td style="font-size:10px;color:var(--txt-muted)">${h.pod||'—'}</td>
-      <td style="font-family:'JetBrains Mono',monospace;color:${(h.cbCount||0)>30?'var(--rose-l)':'inherit'}">${fmt(h.cbCount||0)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;color:${(h.cbCount||0)>30?'var(--crimson)':'inherit'}">${fmt(h.cbCount||0)}</td>
       <td style="font-family:'JetBrains Mono',monospace">${fmt(h.odcCount||0)}</td>
       <td style="font-family:'JetBrains Mono',monospace">${fmt(h.itCount||0)}</td>
       <td style="font-family:'JetBrains Mono',monospace">${fmt(h.fwdShortCount||0)}</td>
-      <td style="font-family:'JetBrains Mono',monospace;color:${(h.rvpShortCount||0)>20?'var(--amber-l)':'inherit'}">${fmt(h.rvpShortCount||0)}</td>
-      <td><div style="font-family:'JetBrains Mono',monospace;font-size:11px">${h.lossScore||0}</div><div class="sbar-wrap"><div class="sbar" style="width:${h.lossScore||0}%;background:var(--rose)"></div></div></td>
-      <td><div style="font-family:'JetBrains Mono',monospace;font-size:11px">${h.pendScore||0}</div><div class="sbar-wrap"><div class="sbar" style="width:${h.pendScore||0}%;background:var(--amber)"></div></div></td>
-      <td><div style="font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace;color:${bc(h.weightedScore)}">${h.weightedScore}</div><div class="sbar-wrap"><div class="sbar" style="width:${h.weightedScore}%;background:${bc(h.weightedScore)}"></div></div></td>
+      <td style="font-family:'JetBrains Mono',monospace;color:${(h.rvpShortCount||0)>20?'var(--amber)':'inherit'}">${fmt(h.rvpShortCount||0)}</td>
+      <td><div style="font-family:'JetBrains Mono',monospace;font-size:11px">${h.lossScore||0}</div><div class="sbar-wrap"><div class="sbar" style="width:${h.lossScore||0}%;background:var(--crimson-l)"></div></div></td>
+      <td><div style="font-family:'JetBrains Mono',monospace;font-size:11px">${h.pendScore||0}</div><div class="sbar-wrap"><div class="sbar" style="width:${h.pendScore||0}%;background:var(--amber-l)"></div></div></td>
+      <td><div style="font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace;color:${bc(h.weightedScore)}">${h.weightedScore}</div><div class="sbar-wrap"><div class="sbar" style="width:${h.weightedScore}%;background:${bc(h.weightedScore)}"></div></div></td>
       <td><span class="pill ${pc(h.weightedScore)}">${rl(h.weightedScore)}</span></td>
     </tr>`).join('');
   updateActivePills();
 }
 
-function dlSC(){
-  const n=parseInt(document.getElementById('sc-n')?.value)||50;
-  const all=getSCData();
-  const show=scModeSt==='top'?[...all].reverse().slice(0,n):all.slice(0,n);
-  dlCSV(['Hub/Group,Zone,POD,CB10+,LM-ODC,Intransit,FwdShort,RVPShort,LossScore,PendScore,WeightedScore,Status',...show.map(h=>`${h.node||h.key},${h.zone},${h.pod},${h.cbCount||0},${h.odcCount||0},${h.itCount||0},${h.fwdShortCount||0},${h.rvpShortCount||0},${h.lossScore||0},${h.pendScore||0},${h.weightedScore},${rl(h.weightedScore)}`)].join('\n'),`scorecard_${scModeSt}${n}.csv`);
-  toast('Scorecard downloaded','ok');
-}
+function dlSC(){ const n=parseInt(document.getElementById('sc-n')?.value)||50; const all=getSCData(); const show=scModeSt==='top'?[...all].reverse().slice(0,n):all.slice(0,n); dlCSV(['Hub,Zone,POD,CB10+,ODC,Intransit,FwdShort,RVPShort,LossScore,PendScore,Weighted,Status',...show.map(h=>`${h.node||h.key},${h.zone},${h.pod||''},${h.cbCount||0},${h.odcCount||0},${h.itCount||0},${h.fwdShortCount||0},${h.rvpShortCount||0},${h.lossScore||0},${h.pendScore||0},${h.weightedScore},${rl(h.weightedScore)}`)].join('\n'),`scorecard_${scModeSt}${n}.csv`); toast('Scorecard downloaded','ok'); }
+function dlReport(){ const d=getSCData().slice(0,50); const td=new Date().toLocaleDateString('en-IN').replace(/\//g,'-'); dlCSV(['Hub,Zone,POD,CB10+,ODC,Intransit,FwdShort,RVPShort,LossScore,PendScore,Weighted,Status',...d.map(h=>`${h.node||h.key},${h.zone},${h.pod||''},${h.cbCount||0},${h.odcCount||0},${h.itCount||0},${h.fwdShortCount||0},${h.rvpShortCount||0},${h.lossScore||0},${h.pendScore||0},${h.weightedScore},${rl(h.weightedScore)}`)].join('\n'),`weekly_report_${td}.csv`); toast('Weekly report downloaded','ok'); }
 
-function zoneBot(n){
-  document.getElementById('zb-wrap').style.display='block';
-  setSt('zb-title',`Zone-wise bottom ${n} hubs`);
-  const zones=[...new Set(hubSummary.map(h=>h.zone).filter(Boolean))];
-  const rows=[];
-  zones.forEach(z=>hubSummary.filter(h=>h.zone===z).slice(0,n).forEach(h=>rows.push(h)));
-  document.getElementById('zb-tbody').innerHTML=rows.map(h=>`
-    <tr><td><span class="pill p-sky">${h.zone}</span></td>
-    <td style="font-weight:600;color:var(--txt-hi)">${h.node}</td>
-    <td style="font-weight:800;font-family:'JetBrains Mono',monospace;color:${bc(h.weightedScore)}">${h.weightedScore}</td>
-    <td><span class="pill ${pc(h.weightedScore)}">${rl(h.weightedScore)}</span></td></tr>`).join('');
-  document.getElementById('zb-wrap').scrollIntoView({behavior:'smooth',block:'start'});
-}
+function zoneBot(n){ document.getElementById('zb-wrap').style.display='block'; setSt('zb-title','Zone-wise bottom '+n+' hubs'); const zones=[...new Set(hubSummary.map(h=>h.zone).filter(Boolean))]; const rows=[]; zones.forEach(z=>hubSummary.filter(h=>h.zone===z).slice(0,n).forEach(h=>rows.push(h))); document.getElementById('zb-tbody').innerHTML=rows.map(h=>`<tr><td><span class="pill p-sky">${h.zone}</span></td><td style="font-weight:700;color:var(--txt-hi)">${h.node}</td><td style="font-weight:800;font-family:'JetBrains Mono',monospace;color:${bc(h.weightedScore)}">${h.weightedScore}</td><td><span class="pill ${pc(h.weightedScore)}">${rl(h.weightedScore)}</span></td></tr>`).join(''); document.getElementById('zb-wrap').scrollIntoView({behavior:'smooth',block:'start'}); }
 
-function dlReport(){
-  const all=getSCData().slice(0,50);
-  const today=new Date().toLocaleDateString('en-IN').replace(/\//g,'-');
-  dlCSV(['Hub,Zone,POD,CB10+,ODC,Intransit,FwdShort,RVPShort,LossScore,PendScore,WeightedScore,Status',...all.map(h=>`${h.node||h.key},${h.zone},${h.pod},${h.cbCount||0},${h.odcCount||0},${h.itCount||0},${h.fwdShortCount||0},${h.rvpShortCount||0},${h.lossScore||0},${h.pendScore||0},${h.weightedScore},${rl(h.weightedScore)}`)].join('\n'),`weekly_report_${today}.csv`);
-  toast('Weekly report downloaded','ok');
-}
+function updateActivePills(){ const active=scoringRules.filter(r=>r.status==='active'); setSt('sc-rules',active.length); setSt('sc-fw-v',fraudW+'%'); setSt('sc-pw-v',pendW+'%'); document.getElementById('active-pills-row').innerHTML=active.length?active.map(r=>`<span class="pill p-blue" style="font-size:9px">${r.name}</span>`).join(''):'<span style="font-size:11px;color:var(--txt-muted);font-style:italic">None yet</span>'; }
 
-function updateActivePills(){
-  const active=scoringRules.filter(r=>r.status==='active');
-  setSt('sc-rules', active.length);
-  setSt('sc-fw-v', fraudW+'%'); setSt('sc-pw-v', pendW+'%');
-  document.getElementById('active-pills-row').innerHTML=active.map(r=>`<span class="pill p-indigo" style="font-size:9px">${r.name}</span>`).join('');
-}
-
-/* ── GATE ── */
-function openGate(){ const g=document.getElementById('gate-wrap');g.style.display='flex';document.getElementById('reditor').style.display='none';document.getElementById('gate-user').value='';document.getElementById('gate-pass').value='';document.getElementById('gate-err').style.display='none'; }
+/* ── GATE & RULES ── */
+function openGate(){ document.getElementById('gate-wrap').style.display='flex'; document.getElementById('reditor').style.display='none'; document.getElementById('gate-user').value=''; document.getElementById('gate-pass').value=''; document.getElementById('gate-err').style.display='none'; }
 function closeGate(){ document.getElementById('gate-wrap').style.display='none'; }
-function gateLogin(){
-  const u=document.getElementById('gate-user').value.trim(),p=document.getElementById('gate-pass').value;
-  if(ADMIN_CREDS[u]&&ADMIN_CREDS[u]===p){
-    document.getElementById('gate-wrap').style.display='none';
-    document.getElementById('reditor').style.display='block';
-    renderRulesList(); cancelRForm();
-    document.getElementById('reditor').scrollIntoView({behavior:'smooth',block:'start'});
-    toast('Admin session started','ok');
-  }else{
-    const e=document.getElementById('gate-err'); e.style.display='block'; e.textContent='Incorrect credentials.';
-    setTimeout(()=>e.style.display='none',3000);
-  }
-}
+function gateLogin(){ const u=document.getElementById('gate-user').value.trim(),p=document.getElementById('gate-pass').value; if(ADMIN_CREDS[u]&&ADMIN_CREDS[u]===p){ document.getElementById('gate-wrap').style.display='none'; document.getElementById('reditor').style.display='block'; renderRulesList(); cancelRForm(); document.getElementById('reditor').scrollIntoView({behavior:'smooth',block:'start'}); toast('Admin session started','ok'); }else{ const e=document.getElementById('gate-err'); e.style.display='block'; e.textContent='Incorrect credentials.'; setTimeout(()=>e.style.display='none',3000); } }
 function lockEditor(){ document.getElementById('reditor').style.display='none'; document.getElementById('gate-wrap').style.display='none'; toast('Editor locked',''); }
-
-/* ── WEIGHTS ── */
-function syncW(ch){
-  const fv=parseInt(document.getElementById('w-fraud').value)||0,pv=parseInt(document.getElementById('w-pend').value)||0;
-  if(ch==='fraud')document.getElementById('w-pend').value=Math.max(0,100-fv);
-  else document.getElementById('w-fraud').value=Math.max(0,100-pv);
-  const tot=(parseInt(document.getElementById('w-fraud').value)||0)+(parseInt(document.getElementById('w-pend').value)||0);
-  const el=document.getElementById('w-total');
-  el.textContent=tot; el.style.color=tot===100?'var(--emerald-l)':'var(--rose-l)';
-}
-async function applyW(){
-  const f=parseInt(document.getElementById('w-fraud').value)||0,p=parseInt(document.getElementById('w-pend').value)||0;
-  if(f+p!==100){toast('Weights must total 100%','err');return;}
-  fraudW=f; pendW=p;
-  try{await callAPI('saveWeights',{weights:{fraud_weight:f,pend_weight:p}});toast('Weights saved to Sheets','ok');}catch(e){toast('Saved locally','warn');}
-  const msg=document.getElementById('w-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',3000);
-  if(rawRows.length){buildHubIndex();renderSC();}
-}
-
-/* ── RULES ── */
-function renderRulesList(){
-  const cl={gt:'>',gte:'>=',lt:'<',lte:'<='};
-  document.getElementById('rules-list').innerHTML=scoringRules.length===0
-    ?'<div style="font-size:11px;color:var(--txt-muted);padding:10px 0">No rules yet.</div>'
-    :scoringRules.map((r,i)=>`
-      <div class="rcard">
-        <div class="rcard-head">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span class="rcard-name">${r.name}</span>
-            <span class="pill ${r.status==='active'?'p-emerald':'p-amber'}">${r.status}</span>
-            <span class="pill p-violet" style="font-size:9px">${r.priority}</span>
-          </div>
-          <div class="rcard-actions">
-            <button class="btn btn-xs" onclick="editRule(${i})">Edit</button>
-            <button class="btn btn-xs btn-ghost" onclick="toggleRule(${i})">${r.status==='active'?'Disable':'Enable'}</button>
-            <button class="btn btn-xs" style="color:var(--rose-l);border-color:rgba(244,63,94,.3)" onclick="deleteRule(${i})">Delete</button>
-          </div>
-        </div>
-        <div class="rcard-grid">
-          <div><div class="rf-lbl">Metric</div><div class="rf-val">${r.metric}</div></div>
-          <div><div class="rf-lbl">Condition</div><div class="rf-val">${cl[r.cond]||r.cond} ${r.threshold}</div></div>
-          <div><div class="rf-lbl">Multiplier · Scope</div><div class="rf-val">${r.multiplier}× · ${r.applies}</div></div>
-        </div>
-      </div>`).join('');
-}
-
-function showRForm(fe){document.getElementById('rform').style.display='block';document.getElementById('add-rule-btn').style.display='none';if(!fe){setSt('rform-title','New scoring rule');document.getElementById('rf-id').value='';['rf-name','rf-thr','rf-mul'].forEach(id=>document.getElementById(id).value='');}}
-function cancelRForm(){document.getElementById('rform').style.display='none';document.getElementById('add-rule-btn').style.display='block';}
-function editRule(i){const r=scoringRules[i];document.getElementById('rf-id').value=r.id||i;document.getElementById('rf-name').value=r.name;document.getElementById('rf-applies').value=r.applies;document.getElementById('rf-metric').value=r.metric;document.getElementById('rf-cond').value=r.cond;document.getElementById('rf-thr').value=r.threshold;document.getElementById('rf-mul').value=r.multiplier;document.getElementById('rf-pri').value=r.priority;document.getElementById('rf-status').value=r.status;setSt('rform-title','Edit: '+r.name);showRForm(true);}
-async function saveRule(){
-  const name=document.getElementById('rf-name').value.trim(),thr=parseFloat(document.getElementById('rf-thr').value),mul=parseFloat(document.getElementById('rf-mul').value);
-  if(!name){toast('Enter rule name','err');return;} if(isNaN(thr)){toast('Enter threshold','err');return;} if(isNaN(mul)||mul<=0){toast('Enter valid multiplier','err');return;}
-  const rule={id:document.getElementById('rf-id').value||'',name,applies:document.getElementById('rf-applies').value,metric:document.getElementById('rf-metric').value,cond:document.getElementById('rf-cond').value,threshold:thr,multiplier:mul,priority:document.getElementById('rf-pri').value,status:document.getElementById('rf-status').value};
-  try{const res=await callAPI('saveRule',{rule});rule.id=res.id||rule.id||'rule_'+Date.now();toast('Rule saved to Sheets','ok');}catch(e){rule.id=rule.id||'rule_'+Date.now();toast('Saved locally','warn');}
-  const idx=scoringRules.findIndex(r=>r.id===rule.id);
-  if(idx>=0)scoringRules[idx]=rule;else scoringRules.push(rule);
-  const msg=document.getElementById('rule-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',3000);
-  cancelRForm();renderRulesList();if(rawRows.length){buildHubIndex();renderSC();}
-}
-function toggleRule(i){scoringRules[i].status=scoringRules[i].status==='active'?'inactive':'active';callAPI('saveRule',{rule:scoringRules[i]}).catch(()=>{});renderRulesList();if(rawRows.length){buildHubIndex();renderSC();}}
-async function deleteRule(i){if(!confirm(`Delete rule "${scoringRules[i].name}"?`))return;const id=scoringRules[i].id;scoringRules.splice(i,1);try{await callAPI('deleteRule',{id});}catch(e){}renderRulesList();if(rawRows.length){buildHubIndex();renderSC();}toast('Rule deleted','');}
+function syncW(ch){ const fv=parseInt(document.getElementById('w-fraud').value)||0,pv=parseInt(document.getElementById('w-pend').value)||0; if(ch==='fraud')document.getElementById('w-pend').value=Math.max(0,100-fv); else document.getElementById('w-fraud').value=Math.max(0,100-pv); const tot=(parseInt(document.getElementById('w-fraud').value)||0)+(parseInt(document.getElementById('w-pend').value)||0); const el=document.getElementById('w-total'); el.textContent=tot; el.style.color=tot===100?'var(--emerald)':'var(--crimson)'; }
+async function applyW(){ const f=parseInt(document.getElementById('w-fraud').value)||0,p=parseInt(document.getElementById('w-pend').value)||0; if(f+p!==100){toast('Weights must total 100%','err');return;} fraudW=f; pendW=p; try{await callAPI('saveWeights',{weights:{fraud_weight:f,pend_weight:p}});toast('Weights saved to Sheets','ok');}catch(e){toast('Saved locally (Sheets not connected)','warn');} const msg=document.getElementById('w-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',3000); if(rawRows.length){buildHubIndex();renderSC();} }
+function renderRulesList(){ const cl={gt:'>',gte:'>=',lt:'<',lte:'<='}; document.getElementById('rules-list').innerHTML=scoringRules.length===0?'<div style="font-size:11px;color:var(--txt-muted);padding:10px 0">No rules yet. Add one below.</div>':scoringRules.map((r,i)=>`<div class="rcard"><div class="rcard-head"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="rcard-name">${r.name}</span><span class="pill ${r.status==='active'?'p-emerald':'p-amber'}">${r.status}</span><span class="pill p-violet" style="font-size:9px">${r.priority}</span></div><div class="rcard-actions"><button class="btn btn-outline btn-xs" onclick="editRule(${i})">Edit</button><button class="btn btn-outline btn-xs" onclick="toggleRule(${i})">${r.status==='active'?'Disable':'Enable'}</button><button class="btn btn-xs" style="background:var(--crimson-bg);color:var(--crimson);border:1px solid var(--crimson-bd)" onclick="deleteRule(${i})">Delete</button></div></div><div class="rcard-grid"><div><div class="rf-lbl">Metric</div><div class="rf-val">${r.metric}</div></div><div><div class="rf-lbl">Condition</div><div class="rf-val">${cl[r.cond]||r.cond} ${r.threshold}</div></div><div><div class="rf-lbl">Mult · Scope</div><div class="rf-val">${r.multiplier}× · ${r.applies}</div></div></div></div>`).join(''); }
+function showRForm(fe){ document.getElementById('rform').style.display='block'; document.getElementById('add-rule-btn').style.display='none'; if(!fe){setSt('rform-title','New scoring rule');document.getElementById('rf-id').value='';['rf-name','rf-thr','rf-mul'].forEach(id=>document.getElementById(id).value='');} }
+function cancelRForm(){ document.getElementById('rform').style.display='none'; document.getElementById('add-rule-btn').style.display='block'; }
+function editRule(i){ const r=scoringRules[i]; document.getElementById('rf-id').value=r.id||i; document.getElementById('rf-name').value=r.name; document.getElementById('rf-applies').value=r.applies; document.getElementById('rf-metric').value=r.metric; document.getElementById('rf-cond').value=r.cond; document.getElementById('rf-thr').value=r.threshold; document.getElementById('rf-mul').value=r.multiplier; document.getElementById('rf-pri').value=r.priority; document.getElementById('rf-status').value=r.status; setSt('rform-title','Edit: '+r.name); showRForm(true); }
+async function saveRule(){ const name=document.getElementById('rf-name').value.trim(),thr=parseFloat(document.getElementById('rf-thr').value),mul=parseFloat(document.getElementById('rf-mul').value); if(!name){toast('Enter rule name','err');return;} if(isNaN(thr)){toast('Enter threshold','err');return;} if(isNaN(mul)||mul<=0){toast('Enter valid multiplier','err');return;} const rule={id:document.getElementById('rf-id').value||'',name,applies:document.getElementById('rf-applies').value,metric:document.getElementById('rf-metric').value,cond:document.getElementById('rf-cond').value,threshold:thr,multiplier:mul,priority:document.getElementById('rf-pri').value,status:document.getElementById('rf-status').value}; try{const res=await callAPI('saveRule',{rule});rule.id=res.id||rule.id||'rule_'+Date.now();toast('Saved to Sheets','ok');}catch(e){rule.id=rule.id||'rule_'+Date.now();toast('Saved locally','warn');} const idx=scoringRules.findIndex(r=>r.id===rule.id); if(idx>=0)scoringRules[idx]=rule;else scoringRules.push(rule); const msg=document.getElementById('rule-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',3000); cancelRForm();renderRulesList();if(rawRows.length){buildHubIndex();renderSC();} }
+function toggleRule(i){ scoringRules[i].status=scoringRules[i].status==='active'?'inactive':'active'; callAPI('saveRule',{rule:scoringRules[i]}).catch(()=>{}); renderRulesList();if(rawRows.length){buildHubIndex();renderSC();} }
+async function deleteRule(i){ if(!confirm('Delete rule "'+scoringRules[i].name+'"?'))return; const id=scoringRules[i].id; scoringRules.splice(i,1); try{await callAPI('deleteRule',{id});}catch(e){} renderRulesList();if(rawRows.length){buildHubIndex();renderSC();}toast('Rule deleted',''); }
 
 /* ── TREND ── */
-function trendDim(el,dim){
-  el.parentElement.querySelectorAll('.snb').forEach(b=>b.classList.remove('active')); el.classList.add('active');
-  trendDimSt=dim; populateTrendFilter();
-  setSt('t-line-title','Trend by week — '+dim); setSt('t-bar-title','Average score by '+dim);
-  renderTrend();
-}
+function trendDim(el,dim){ el.parentElement.querySelectorAll('.snb').forEach(b=>b.classList.remove('active')); el.classList.add('active'); trendDimSt=dim; populateTFilter(); setSt('t-line-title','Trend by week — '+dim); setSt('t-bar-title','Average score by '+dim); renderTrend(); }
 
-function renderTrend(){
-  if(!window.Chart) return;
-  const metric=document.getElementById('t-metric')?.value||'weightedScore';
-  const fv=document.getElementById('t-filter')?.value||'';
-  const allDims=[...new Set(rawRows.map(r=>(r[trendDimSt]||'').trim()).filter(Boolean))].slice(0,8);
-  const dims=fv?[fv]:allDims.slice(0,5);
+function renderTrend() {
+  if (!window.Chart || !rawRows.length) return;
+  const metric  = document.getElementById('t-metric')?.value||'weighted';
+  const fv      = document.getElementById('t-filter')?.value||'';
+  const allDims = [...new Set(rawRows.map(r=>getField(r,trendDimSt,trendDimSt.toLowerCase())).filter(Boolean))].slice(0,8);
+  const dims    = fv ? [fv] : allDims.slice(0,5);
+  const now     = new Date();
 
-  // Build weekly buckets from rawRows
-  const now=new Date();
-  const weekBuckets=[[],[],[],[]];
-  rawRows.forEach(r=>{
-    const d=new Date(r.lost_date||r.picked_date||'');
-    if(isNaN(d)) return;
-    const daysAgo=Math.floor((now-d)/(1000*60*60*24));
-    const wk=Math.min(3,Math.floor(daysAgo/7));
+  const weekBuckets = [[],[],[],[]];
+  rawRows.forEach(r => {
+    const d = new Date(getField(r,'lost_date','picked_date','shipment_last_updated'));
+    if (isNaN(d)) return;
+    const daysAgo = Math.floor((now-d)/(86400000));
+    const wk = Math.min(3, Math.floor(daysAgo/7));
     weekBuckets[3-wk].push(r);
   });
-  const WEEKS=['Week 1','Week 2','Week 3','Week 4'];
 
-  const datasets=dims.map((d,i)=>({
-    label:d,
-    data:weekBuckets.map(wkRows=>{
-      const sub=wkRows.filter(r=>(r[trendDimSt]||'').trim()===d);
-      if(!sub.length) return 0;
-      if(metric==='weightedScore'||metric==='lossScore'||metric==='pendScore'){
-        const lossCount=sub.filter(r=>BUCKETS.cb(r)||BUCKETS.odc(r)||BUCKETS.intransit(r)||BUCKETS.fwdShort(r)||BUCKETS.rvpShort(r)).length;
-        return Math.min(100,Math.round((lossCount/sub.length)*100));
-      }
-      const countMap={cbCount:'cb',odcCount:'odc',itCount:'intransit',fwdShortCount:'fwdShort',rvpShortCount:'rvpShort'};
-      const bk=countMap[metric];
-      return bk ? sub.filter(r=>BUCKETS[bk](r)).length : sub.length;
+  const bkMap = {cb:'cb',odc:'odc',it:'intransit',fwdShort:'fwdShort',rvpShort:'rvpShort'};
+  const datasets = dims.map((d,i) => ({
+    label: d,
+    data: weekBuckets.map(wkRows => {
+      const sub = wkRows.filter(r => getField(r,trendDimSt,trendDimSt.toLowerCase())===d);
+      if (!sub.length) return 0;
+      if (metric==='weighted') { const lc=sub.filter(r=>BUCKETS.cb(r)||BUCKETS.odc(r)||BUCKETS.intransit(r)||BUCKETS.fwdShort(r)||BUCKETS.rvpShort(r)).length; return Math.min(100,Math.round((lc/sub.length)*100)); }
+      const bk = bkMap[metric]; return bk ? sub.filter(r=>BUCKETS[bk](r)).length : sub.length;
     }),
-    borderColor:TCOLORS[i%TCOLORS.length], backgroundColor:'transparent',
-    pointBackgroundColor:TCOLORS[i%TCOLORS.length], borderWidth:2, pointRadius:4, tension:0.3,
-    borderDash:i>2?[5,3]:[]
+    borderColor: TCOLORS[i%TCOLORS.length], backgroundColor:'transparent',
+    pointBackgroundColor: TCOLORS[i%TCOLORS.length], borderWidth:2, pointRadius:4, tension:0.3,
+    borderDash: i>2?[5,3]:[]
   }));
 
-  document.getElementById('t-legend').innerHTML=datasets.map((d,i)=>`<div class="tleg-item"><span class="tleg-dot" style="background:${TCOLORS[i%TCOLORS.length]}"></span>${d.label}</div>`).join('');
+  document.getElementById('t-legend').innerHTML = datasets.map((d,i)=>`<div class="tleg-item"><span class="tleg-dot" style="background:${TCOLORS[i%TCOLORS.length]}"></span>${d.label}</div>`).join('');
 
-  if(tLineInst) tLineInst.destroy();
-  tLineInst=new Chart(document.getElementById('tLineC'),{type:'line',data:{labels:WEEKS,datasets},
+  if (tLineInst) tLineInst.destroy();
+  tLineInst = new Chart(document.getElementById('tLineC'), {
+    type:'line', data:{labels:WEEKS,datasets},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{ticks:{color:'#5a6a96',font:{size:10,family:'JetBrains Mono'}},grid:{color:'rgba(255,255,255,0.04)'}},
-              y:{ticks:{color:'#5a6a96',font:{size:10,family:'JetBrains Mono'}},grid:{color:'rgba(255,255,255,0.04)'}}}}});
-
-  const barDims=fv?[fv]:allDims.slice(0,8);
-  const barVals=barDims.map(d=>{
-    const sub=rawRows.filter(r=>(r[trendDimSt]||'').trim()===d);
-    if(!sub.length) return 0;
-    const lc=sub.filter(r=>BUCKETS.cb(r)||BUCKETS.odc(r)||BUCKETS.intransit(r)||BUCKETS.fwdShort(r)||BUCKETS.rvpShort(r)).length;
-    return Math.min(100,Math.round((lc/sub.length)*100));
+      scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},
+              y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}}}}
   });
 
-  if(tBarInst) tBarInst.destroy();
-  tBarInst=new Chart(document.getElementById('tBarC'),{type:'bar',data:{labels:barDims,datasets:[{data:barVals,backgroundColor:barVals.map(v=>v>70?'rgba(244,63,94,.55)':v>40?'rgba(245,158,11,.55)':'rgba(16,185,129,.55)'),borderColor:barVals.map(v=>v>70?'var(--rose)':v>40?'var(--amber)':'var(--emerald)'),borderWidth:1,borderRadius:5}]},
+  const barDims = fv ? [fv] : allDims.slice(0,8);
+  const barVals = barDims.map(d => { const sub=rawRows.filter(r=>getField(r,trendDimSt,trendDimSt.toLowerCase())===d); if(!sub.length) return 0; const lc=sub.filter(r=>BUCKETS.cb(r)||BUCKETS.odc(r)||BUCKETS.intransit(r)||BUCKETS.fwdShort(r)||BUCKETS.rvpShort(r)).length; return Math.min(100,Math.round((lc/sub.length)*100)); });
+
+  if (tBarInst) tBarInst.destroy();
+  tBarInst = new Chart(document.getElementById('tBarC'), {
+    type:'bar', data:{labels:barDims,datasets:[{data:barVals,backgroundColor:barVals.map(v=>v>70?'rgba(220,38,38,.7)':v>40?'rgba(217,119,6,.7)':'rgba(5,150,105,.7)'),borderColor:barVals.map(v=>v>70?'#dc2626':v>40?'#d97706':'#059669'),borderWidth:1,borderRadius:6}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{ticks:{color:'#5a6a96',font:{size:10}},grid:{display:false}},
-              y:{ticks:{color:'#5a6a96',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+      scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{display:false}},
+              y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}}}}
+  });
 }
 
 /* ── UPLOAD HISTORY ── */
-const uploadHistory=[];
-function logUpload(name,count){
-  uploadHistory.unshift({name,count,ts:new Date().toLocaleString('en-IN')});
-  renderHist();
-}
-function loadHist(){ renderHist(); }
-function renderHist(){
-  const body=document.getElementById('hist-body');
-  if(!uploadHistory.length){body.innerHTML='<div style="font-size:11px;color:var(--txt-muted)">No uploads yet in this session.</div>';return;}
-  body.innerHTML=uploadHistory.slice(0,8).map(u=>`
-    <div class="hist-row">
-      <span style="font-size:11px;color:var(--txt-muted)">${u.ts} · ${u.name} · ${u.count.toLocaleString()} rows</span>
-      <span class="pill p-emerald">Loaded</span>
-    </div>`).join('');
-}
+function logUpload(name,count){ uploadHistory.unshift({name,count,ts:new Date().toLocaleString('en-IN')}); renderHist(); }
+function renderHist(){ const body=document.getElementById('hist-body'); if(!uploadHistory.length){body.innerHTML='<div style="font-size:11px;color:var(--txt-muted)">No uploads yet in this session.</div>';return;} body.innerHTML=uploadHistory.slice(0,10).map(u=>`<div class="hist-row"><span style="font-size:11px;color:var(--txt-muted)">${u.ts} · ${u.name} · ${u.count.toLocaleString()} rows</span><span class="pill p-emerald">Loaded</span></div>`).join(''); }
+
+/* ── DRAG & DROP ── */
+function dov(e,id){ e.preventDefault(); document.getElementById(id).classList.add('drag-over'); }
+function dol(id){ document.getElementById(id).classList.remove('drag-over'); }
+function dop(e,id,inputId,statusId){ e.preventDefault(); dol(id); const file=e.dataTransfer.files[0]; if(!file)return; Object.defineProperty(document.getElementById(inputId),'files',{value:[file],configurable:true}); handleCSV({target:{files:[file],value:''},preventDefault:()=>{}},statusId); }
 
 /* ── SHEETS API ── */
-async function callAPI(action, payload={}){
-  if(APPS_SCRIPT_URL==='YOUR_APPS_SCRIPT_URL_HERE') throw new Error('DEMO_MODE');
-  const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify({action,...payload}),headers:{'Content-Type':'text/plain'}});
-  const json=await res.json();
-  if(!json.ok) throw new Error(json.error||'API error');
+async function callAPI(action, payload={}) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method:'POST',
+    body: JSON.stringify({action,...payload}),
+    headers:{'Content-Type':'text/plain'}
+  });
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error||'API error');
   return json.data;
 }
 
-async function loadRulesAndWeights(){
-  try{
-    const dash=await callAPI('getDashboard');
-    scoringRules=(dash.rules||[]).map(r=>({...r,threshold:parseFloat(r.threshold),multiplier:parseFloat(r.multiplier)}));
-    if(dash.weights){fraudW=parseInt(dash.weights.fraud_weight)||60;pendW=parseInt(dash.weights.pend_weight)||40;document.getElementById('w-fraud').value=fraudW;document.getElementById('w-pend').value=pendW;}
+async function loadRulesWeights() {
+  try {
+    const dash = await callAPI('getDashboard');
+    scoringRules = (dash.rules||[]).map(r=>({...r,threshold:parseFloat(r.threshold),multiplier:parseFloat(r.multiplier)}));
+    if (dash.weights) {
+      fraudW = parseInt(dash.weights.fraud_weight)||60;
+      pendW  = parseInt(dash.weights.pend_weight)||40;
+      document.getElementById('w-fraud').value = fraudW;
+      document.getElementById('w-pend').value  = pendW;
+    }
     setSync('ok','Sheets connected');
-    toast('Rules loaded from Sheets','ok');
-  }catch(e){
-    if(e.message!=='DEMO_MODE') setSync('error','Sheets error');
-    else { setSync('warn','Demo mode'); document.getElementById('setup-banner').style.display='block'; }
-    // Default rules
-    if(!scoringRules.length) scoringRules=[
+    toast('Rules loaded from Google Sheets','ok');
+  } catch(e) {
+    setSync('warn','Demo mode — Sheets optional');
+    if (!scoringRules.length) scoringRules = [
       {id:'r1',name:'Default scoring',metric:'lossScore',cond:'gte',threshold:0,multiplier:1,applies:'all',priority:'high',status:'active'},
       {id:'r2',name:'High loss escalation',metric:'lossScore',cond:'gt',threshold:70,multiplier:1.4,applies:'all',priority:'high',status:'active'}
     ];
@@ -1929,52 +1559,18 @@ async function loadRulesAndWeights(){
   updateActivePills();
 }
 
-async function purgeOld(){
-  if(!confirm('Remove all data older than 30 days from Google Sheets?'))return;
-  showLoader('Purging old data…');
-  try{const r=await callAPI('purgeOldData');toast(`Purged ${r.purged} old rows`,'ok');}
-  catch(e){toast(e.message==='DEMO_MODE'?'Connect Sheets first':'Error: '+e.message,'err');}
-  hideLoader();
-}
-
-function quickUpload(e){ handleCSV(e,'ust-main','main'); }
-
-/* ── DRAG DROP ── */
-function dov(e,id){e.preventDefault();document.getElementById(id).classList.add('drag-over');}
-function dol(id){document.getElementById(id).classList.remove('drag-over');}
-function dop(e,id,inputId,statusId,type){
-  e.preventDefault(); dol(id);
-  const file=e.dataTransfer.files[0]; if(!file)return;
-  const inp=document.getElementById(inputId);
-  Object.defineProperty(inp,'files',{value:[file],configurable:true});
-  handleCSV({target:inp},statusId,type);
-}
-
-async function refreshAll(){
-  showLoader('Refreshing…');
-  await loadRulesAndWeights();
-  updateMeta(); renderAll();
-  hideLoader(); toast('Dashboard refreshed','ok');
-}
+async function purgeOld(){ if(!confirm('Remove all data older than 30 days from Google Sheets?'))return; showLoader('Purging…'); try{const r=await callAPI('purgeOldData');toast('Purged '+r.purged+' old rows','ok');}catch(e){toast('Purge error: '+e.message,'err');} hideLoader(); }
 
 /* ════════════════════════════════════════════════
    BOOT
 ════════════════════════════════════════════════ */
-window.addEventListener('DOMContentLoaded', async ()=>{
+window.addEventListener('DOMContentLoaded', async () => {
   updateMeta();
-  showLoader('Loading rules from Sheets…');
-  await loadRulesAndWeights();
+  showLoader('Connecting to Google Sheets…');
+  await loadRulesWeights();
   hideLoader();
-  // Show empty state KPIs
   updateActivePills();
-  setSt('kp-cb','0'); setSt('kp-odc','0'); setSt('kp-it','0');
-  setSt('kp-fh','0'); setSt('kp-fs','0'); setSt('kp-rs','0');
-  setSt('kp-total','Upload CSV →');
-  setSt('kr-rto','0'); setSt('kr-rvp','0'); setSt('kr-rs','0'); setSt('kr-crit','0');
-  setSt('kf-total','0'); setSt('kf-hubs','0');
-  setSt('sc-hubs','0'); setSt('sc-rules', scoringRules.filter(r=>r.status==='active').length);
-  document.getElementById('fr-overview-body').innerHTML='<div style="font-size:11px;color:var(--txt-muted)">Upload CSV to see fraud data.</div>';
-  document.getElementById('fr-detail-body').innerHTML='<div style="font-size:11px;color:var(--txt-muted)">Upload CSV to see data.</div>';
+  setSt('setup-banner', null); // hide if sheets connected
 });
 </script>
 </body>
