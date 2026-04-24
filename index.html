@@ -847,21 +847,52 @@ function loadSummary(event) {
       }).filter(h => h.node);
 
       document.getElementById('ppf').style.width = '100%';
-      st.textContent = `✓ ${hubs.length} hubs loaded from ${file.name}`;
+      st.textContent = `✓ ${hubs.length} hubs loaded · Saving to Google Sheets…`;
       st.className = 'ust ok';
       histLog.unshift({ name:file.name, hubs:hubs.length, type:'Hub Level', ts:new Date().toLocaleString('en-IN') });
       renderHist();
-      toast(`✓ ${hubs.length} hubs loaded`, 'ok');
 
       populateFilters();
       renderAll();
-      setTimeout(() => { document.getElementById('pp').style.display='none'; document.getElementById('ppf').style.width='0%'; }, 2000);
+
+      // ── Save hub summary to Google Sheets so it persists across sessions ──
+      saveHubSummaryToSheets(res.data, file.name).then(saved => {
+        if (saved) {
+          st.textContent = `✓ ${hubs.length} hubs loaded & saved to Google Sheets`;
+        } else {
+          st.textContent = `✓ ${hubs.length} hubs loaded (Sheets sync optional)`;
+        }
+        toast(`✓ ${hubs.length} hubs loaded`, 'ok');
+      });
+
+      setTimeout(() => { document.getElementById('pp').style.display='none'; document.getElementById('ppf').style.width='0%'; }, 2500);
     },
     error(e) {
       st.textContent = 'Error: ' + e.message; st.className = 'ust err';
       document.getElementById('pp').style.display = 'none';
     }
   });
+}
+
+/* save raw CSV rows to Sheets (flat objects — same shape as CSV) */
+async function saveHubSummaryToSheets(rawCsvRows, fileName) {
+  try {
+    // Clean the raw rows: remove PapaParse internals, keep all columns
+    const cleanRows = rawCsvRows.map(r => {
+      const obj = {};
+      Object.keys(r).forEach(k => { if (k !== '__parsed_extra') obj[k] = r[k]; });
+      return obj;
+    });
+    const result = await callAPI('saveHubSummary', {
+      hubs: cleanRows,
+      meta: { uploadedBy: fileName, rows: cleanRows.length }
+    });
+    console.log('Sheets save result:', result);
+    return true;
+  } catch(e) {
+    console.warn('Sheets save failed (non-fatal):', e.message);
+    return false;
+  }
 }
 
 /* ════ LOAD FRAUD CSV — separate dataset ════ */
@@ -933,24 +964,105 @@ async function syncFraudToSheets(rows) {
 
 async function loadRulesWeights() {
   try {
+    showGL('Loading from Google Sheets…');
     const d = await callAPI('getDashboard');
+
+    // ── Load scoring rules ──
     scoringRules = (d.rules||[]).map(r=>({...r, threshold:parseFloat(r.threshold), multiplier:parseFloat(r.multiplier)}));
+
+    // ── Load weights ──
     if (d.weights) {
-      lossW = parseInt(d.weights.fraud_weight)||60;
-      pendW = parseInt(d.weights.pend_weight)||40;
+      lossW = parseInt(d.weights.loss_weight || d.weights.fraud_weight) || 60;
+      pendW = parseInt(d.weights.pend_weight) || 40;
       document.getElementById('wf').value = lossW;
       document.getElementById('wp').value = pendW;
     }
-    setSync('ok','Sheets connected');
-    toast('Rules loaded from Google Sheets','ok');
+
+    // ── Load hub summary from Sheets ──
+    if (d.hubSummary && d.hubSummary.length > 0) {
+      hydrateHubsFromSheets(d.hubSummary);
+    }
+
+    // ── Load fraud data from Sheets ──
+    if (d.fraud && d.fraud.length > 0) {
+      fraudRows = d.fraud;
+      const zones = [...new Set(fraudRows.map(r=>(r['zone']||r['Zone']||'').trim()).filter(Boolean))].sort();
+      fillSel('fr-zone', zones);
+    }
+
+    setSync('ok', hubs.length ? `Sheets · ${hubs.length} hubs` : 'Sheets connected');
+
+    if (hubs.length) {
+      populateFilters();
+      renderAll();
+      toast(`✓ ${hubs.length} hubs loaded from Google Sheets`, 'ok');
+    } else {
+      setSync('ok', 'Sheets connected — upload hub_summary.csv to begin');
+    }
+
   } catch(e) {
-    setSync('w','Sheets optional');
+    setSync('w', 'Sheets optional');
+    console.warn('Sheets load:', e.message);
     if (!scoringRules.length) scoringRules = [
-      { id:'r1', name:'Default scoring', metric:'lossScore', cond:'gte', threshold:0, multiplier:1, applies:'all', priority:'high', status:'active' },
-      { id:'r2', name:'High loss escalation', metric:'lossScore', cond:'gt', threshold:70, multiplier:1.4, applies:'all', priority:'high', status:'active' }
+      { id:'r1', name:'Default scoring',      metric:'lossScore', cond:'gte', threshold:0,  multiplier:1,   applies:'all', priority:'high', status:'active' },
+      { id:'r2', name:'High loss escalation', metric:'lossScore', cond:'gt',  threshold:70, multiplier:1.4, applies:'all', priority:'high', status:'active' }
     ];
   }
   updateActivePills();
+}
+
+/* Convert Sheets hub rows back into the same shape as CSV-parsed hubs */
+function hydrateHubsFromSheets(sheetRows) {
+  const n = v => parseInt(v)||0;
+  const f = v => parseFloat(v)||0;
+
+  hubs = sheetRows.map(r => {
+    const total = n(r['total_rows']) || 1;
+    const lostCnt = n(r['lost_count']);
+    const openCnt = n(r['open_count']);
+    const lossScore = Math.min(100, Math.round((lostCnt / total) * 100));
+    const pendScore = Math.min(100, Math.round((openCnt / total) * 100));
+
+    // Rebuild monthly data from m_YYYY-MM_field columns
+    const months = {};
+    Object.keys(r).filter(k => k.startsWith('m_')).forEach(k => {
+      const parts = k.split('_');
+      if (parts.length >= 3) {
+        const mk = parts[1];
+        const field = parts.slice(2).join('_');
+        if (!months[mk]) months[mk] = {};
+        months[mk][field] = parseInt(r[k])||0;
+      }
+    });
+
+    return {
+      node:          (r['Node']||'').trim(),
+      zone:          (r['Zone']||'—').trim(),
+      pod:           (r['POD']||'—').trim(),
+      vertical:      (r['Vertical']||'—').trim(),
+      nodeType:      (r['Node Type']||'—').trim(),
+      totalRows:     total,
+      lostCount:     lostCnt,
+      openCount:     openCnt,
+      cbCount:       n(r['cb_count']),
+      odcCount:      n(r['odc_count']),
+      itCount:       n(r['intransit_count']),
+      fwdFloorCount: n(r['fwdFloor_count']),
+      fwdShortCount: n(r['fwdShort_count']),
+      rvpShortCount: n(r['rvpShort_count']),
+      rtoPendCount:  n(r['rtoPend_count']),
+      rvpPendCount:  n(r['rvpPend_count']),
+      totalProdVal:  f(r['total_prod_value']),
+      totalDebitVal: f(r['total_debit_value']),
+      avgAge:        f(r['avg_ageing']),
+      maxAge:        f(r['max_ageing']),
+      minDate:       r['min_date']||'',
+      maxDate:       r['max_date']||'',
+      lossScore, pendScore,
+      weightedScore: calcW({ lossScore, pendScore }),
+      months
+    };
+  }).filter(h => h.node);
 }
 
 async function purgeOld() {
@@ -1434,7 +1546,6 @@ function dop(e,id,inputId){
 /* ════ BOOT ════ */
 window.addEventListener('DOMContentLoaded', async () => {
   updateMeta();
-  showGL('Connecting to Google Sheets…');
   await loadRulesWeights();
   hideGL();
   renderRL();
