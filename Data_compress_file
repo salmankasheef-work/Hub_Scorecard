@@ -3,50 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hub Loss — Step 1: Preprocessor</title>
+<title>Hub Loss Scorecard — Step 1: Preprocessor</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4ff;color:#1e293b;min-height:100vh}
-.header{background:linear-gradient(135deg,#1e3a8a,#4c1d95);color:#fff;padding:20px 28px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+.header{background:linear-gradient(135deg,#1e3a8a,#4c1d95);color:#fff;padding:22px 32px;box-shadow:0 3px 12px rgba(0,0,0,.25)}
 .header h1{font-size:20px;font-weight:800;letter-spacing:-.3px}
 .header p{font-size:12px;color:#93c5fd;margin-top:3px}
-.body{max-width:820px;margin:28px auto;padding:0 20px}
-.step-badge{display:inline-flex;align-items:center;gap:8px;background:#1e3a8a;color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
-.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.card h2{font-size:15px;font-weight:800;color:#0f172a;margin-bottom:6px}
-.card p{font-size:12px;color:#64748b;line-height:1.7}
-.drop-zone{border:2px dashed #93c5fd;border-radius:12px;padding:36px;text-align:center;cursor:pointer;transition:all .2s;background:#eff6ff;margin-top:14px}
-.drop-zone:hover,.drop-zone.over{background:#dbeafe;border-color:#2563eb}
-.drop-icon{margin-bottom:10px}
+.body{max-width:860px;margin:28px auto;padding:0 20px}
+.step-badge{display:inline-flex;align-items:center;gap:8px;background:#1e3a8a;color:#fff;font-size:10px;font-weight:700;padding:4px 13px;border-radius:99px;margin-bottom:16px;text-transform:uppercase;letter-spacing:.6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px 28px;margin-bottom:18px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.card h2{font-size:15px;font-weight:800;color:#0f172a;margin-bottom:8px}
+.card p{font-size:12px;color:#64748b;line-height:1.75}
+.section-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;margin-bottom:10px;margin-top:18px;display:block}
+/* Bucket reference table */
+.bucket-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:10px}
+.bucket-table th{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#94a3b8;text-align:left;padding:6px 10px;background:#f8fafc;border-bottom:2px solid #e2e8f0}
+.bucket-table td{padding:7px 10px;border-bottom:1px solid #f1f5f9;color:#334155;font-family:'Courier New',monospace;font-size:10px}
+.bucket-table tr:last-child td{border-bottom:none}
+.bucket-table td:first-child{font-weight:700;font-family:'Segoe UI',sans-serif;color:#1e293b}
+.tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;letter-spacing:.3px}
+.tag-pend{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+.tag-loss{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+/* Drop zone */
+.drop-zone{border:2px dashed #93c5fd;border-radius:12px;padding:38px;text-align:center;cursor:pointer;transition:all .2s;background:#eff6ff;margin-top:16px}
+.drop-zone:hover,.drop-zone.over{background:#dbeafe;border-color:#2563eb;box-shadow:0 4px 16px rgba(37,99,235,.15)}
+.drop-icon{margin-bottom:12px}
 .drop-title{font-size:16px;font-weight:700;color:#2563eb}
-.drop-sub{font-size:11px;color:#64748b;margin-top:5px;line-height:1.6;font-family:'Courier New',monospace}
-.progress-wrap{display:none;margin-top:16px}
-.progress-label{font-size:12px;font-weight:700;color:#1e3a8a;margin-bottom:6px}
+.drop-sub{font-size:11px;color:#64748b;margin-top:6px;line-height:1.65;font-family:'Courier New',monospace}
+/* Progress */
+.progress-wrap{display:none;margin-top:18px}
+.progress-label{font-size:12px;font-weight:700;color:#1e3a8a;margin-bottom:7px}
 .progress-bar-bg{height:10px;background:#e2e8f0;border-radius:99px;overflow:hidden}
-.progress-bar-fill{height:10px;background:linear-gradient(90deg,#2563eb,#7c3aed);border-radius:99px;transition:width .25s ease}
-.progress-sub{font-size:11px;color:#64748b;margin-top:4px}
-.log-box{background:#0f172a;color:#4ade80;font-family:'Courier New',monospace;font-size:11px;padding:14px;border-radius:10px;margin-top:14px;min-height:80px;max-height:200px;overflow-y:auto;display:none;line-height:1.7}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:16px;display:none}
-.stat{background:#f8faff;border:1.5px solid #bfdbfe;border-radius:10px;padding:12px;text-align:center}
-.stat-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:4px}
+.progress-bar-fill{height:10px;background:linear-gradient(90deg,#2563eb,#7c3aed);border-radius:99px;transition:width .25s ease;width:0%}
+.progress-sub{font-size:11px;color:#64748b;margin-top:5px}
+/* Log */
+.log-box{background:#0f172a;color:#4ade80;font-family:'Courier New',monospace;font-size:11px;padding:14px 16px;border-radius:10px;margin-top:14px;min-height:90px;max-height:220px;overflow-y:auto;display:none;line-height:1.7}
+.log-box .warn{color:#fbbf24}
+.log-box .err{color:#f87171}
+/* Stats */
+.stats-grid{display:none;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:18px}
+.stat{background:#f8faff;border:1.5px solid #bfdbfe;border-radius:10px;padding:12px 10px;text-align:center}
+.stat-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:5px}
 .stat-val{font-size:20px;font-weight:800;color:#1e3a8a;font-family:'Courier New',monospace}
-.download-wrap{display:none;margin-top:18px;background:linear-gradient(135deg,#ecfdf5,#f0fdf4);border:2px solid #6ee7b7;border-radius:12px;padding:18px 20px;text-align:center}
-.download-wrap h3{font-size:15px;font-weight:800;color:#065f46;margin-bottom:6px}
-.download-wrap p{font-size:11px;color:#064e3b;margin-bottom:14px}
-.btn-download{background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;padding:11px 28px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(5,150,105,.3)}
-.btn-download:hover{background:linear-gradient(135deg,#047857,#065f46)}
-.next-step{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:14px 16px;margin-top:14px;font-size:12px;color:#1e3a8a;line-height:1.7}
-.next-step strong{font-weight:700}
-.bucket-ref{font-family:'Courier New',monospace;font-size:10px;color:#475569;line-height:1.9;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-top:10px}
-.bucket-ref span{font-weight:700}
+/* Download */
+.download-wrap{display:none;margin-top:20px;background:linear-gradient(135deg,#ecfdf5,#f0fdf4);border:2px solid #6ee7b7;border-radius:13px;padding:22px 24px;text-align:center}
+.download-wrap h3{font-size:16px;font-weight:800;color:#065f46;margin-bottom:6px}
+.download-wrap p{font-size:11px;color:#064e3b;margin-bottom:16px;line-height:1.6}
+.btn-dl{background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;padding:12px 32px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 10px rgba(5,150,105,.3);transition:all .15s}
+.btn-dl:hover{background:linear-gradient(135deg,#047857,#065f46);transform:translateY(-1px)}
+.next-info{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:9px;padding:13px 16px;margin-top:14px;font-size:12px;color:#1e3a8a;line-height:1.75;text-align:left}
+.next-info strong{font-weight:700}
 </style>
 </head>
 <body>
 
 <div class="header">
   <h1>Hub Loss Scorecard — Step 1: Preprocessor</h1>
-  <p>Upload your raw 9-lakh-row CSV → instantly compressed to hub-level summary → download for dashboard</p>
+  <p>Upload your raw 9-lakh-row CSV → groups by Node (hub) → produces a compact hub_summary.csv for the dashboard</p>
 </div>
 
 <div class="body">
@@ -56,26 +71,45 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4ff;color:#1e293
   <div class="card">
     <h2>How this works</h2>
     <p>
-      Your raw CSV has ~9 lakh rows × 87 columns = very heavy for a browser dashboard.<br>
-      This preprocessor reads it in chunks, groups everything by <strong>Node</strong> (hub), computes all bucket counts,
-      and produces a tiny <strong>hub_summary.csv</strong> with one row per hub (~few hundred rows).
-      Upload that small file to the dashboard — it loads in under a second.
+      Your raw CSV has ~9 lakh rows × 87 columns. This tool reads it in 512KB chunks,
+      groups all rows by <strong>Node</strong> (your hub column), counts each bucket,
+      and produces a tiny <strong>hub_summary.csv</strong> (~few hundred rows).
+      Upload that to the dashboard — loads instantly.
     </p>
-    <div class="bucket-ref">
-      <span style="color:#dc2626">CB 10+:</span>        Loss Bucket 2 ∈ [LM CB Pendency (Self), LM CB Pendency (Franchise)]<br>
-      <span style="color:#2563eb">LM-ODC Short:</span>  Loss Bucket 2 = LM to ODC Short<br>
-      <span style="color:#7c3aed">Intransit 10+:</span> Loss Bucket 1 = LH Bag Miss<br>
-      <span style="color:#d97706">Fwd High 5+:</span>   Loss Bucket 2 = DC Forward Floor Miss<br>
-      <span style="color:#0284c7">Fwd Short:</span>     Loss Bucket 2 ∈ [DCH/DCH2 Short Forward, DC-DC Short Forward]<br>
-      <span style="color:#059669">RVP Short:</span>     Loss Bucket 2 = DC-DC Short Return<br>
-      <span style="color:#dc2626">RTO Pend.:</span>     previous_order_status = RTO or order_status = RTO<br>
-      <span style="color:#7c3aed">RVP Pend.:</span>    Loss Bucket 2 = Floor Miss RVP
-    </div>
+    <p style="margin-top:8px">
+      <strong>Scoring:</strong> Uses <code style="background:#f1f5f9;padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:10px">Status Category</code> column —
+      <span style="color:#dc2626;font-weight:700">Lost Shipment</span> → Loss score ·
+      <span style="color:#2563eb;font-weight:700">Open Shipment</span> → Pendency score
+    </p>
+
+    <span class="section-label">Pendency Buckets (from your columns)</span>
+    <table class="bucket-table">
+      <thead><tr><th>Dashboard Tab</th><th>Column</th><th>Filter Value</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>CB 10+</td><td>Loss Bucket 2</td><td>LM CB Pendency (Self) · LM CB Pendency (Franchise)</td><td><span class="tag tag-pend">Pendency</span></td></tr>
+        <tr><td>LM-ODC Short</td><td>Loss Bucket 2</td><td>LM to ODC Short</td><td><span class="tag tag-pend">Pendency</span></td></tr>
+        <tr><td>Intransit 10+</td><td>Loss Bucket 1</td><td>LH Bag Miss</td><td><span class="tag tag-pend">Pendency</span></td></tr>
+        <tr><td>Fwd Floor Miss</td><td>Loss Bucket 2</td><td>DC Forward Floor Miss</td><td><span class="tag tag-pend">Pendency</span></td></tr>
+        <tr><td>Fwd Short</td><td>Loss Bucket 2</td><td>DCH/DCH2 Short Forward · DC-DC Short Forward</td><td><span class="tag tag-pend">Pendency</span></td></tr>
+        <tr><td>RTO Pendency</td><td>previous_order_status / order_status</td><td>RTO</td><td><span class="tag tag-pend">Pendency</span></td></tr>
+        <tr><td>RVP Pendency</td><td>Loss Bucket 2</td><td>Floor Miss RVP</td><td><span class="tag tag-pend">Pendency</span></td></tr>
+        <tr><td>RVP Short</td><td>Loss Bucket 2</td><td>DC-DC Short Return</td><td><span class="tag tag-pend">Pendency</span></td></tr>
+      </tbody>
+    </table>
+
+    <span class="section-label" style="margin-top:16px">Fraud Buckets (uploaded separately — not in this file)</span>
+    <table class="bucket-table">
+      <thead><tr><th>Fraud Bucket</th><th>Upload</th></tr></thead>
+      <tbody>
+        <tr><td>PV Fraud (FK/Myntra), Myntra/FK RVP, Meesho HQC, Non-Meesho QC</td><td>Fraud Buckets Upload in dashboard</td></tr>
+        <tr><td>RTOD Fraud, X-ray Fraud, Rider Impersonation, DBNU, RTOND</td><td>Fraud Buckets Upload in dashboard</td></tr>
+      </tbody>
+    </table>
   </div>
 
   <div class="card">
-    <h2>Upload your raw CSV</h2>
-    <p>Drag & drop or click below. Works with files up to 500MB+. Processing happens entirely in your browser.</p>
+    <h2>Upload your raw Hub Level CSV</h2>
+    <p>Drag &amp; drop or click. Handles files of any size. All processing runs in your browser — no data leaves your machine.</p>
 
     <div class="drop-zone" id="dropZone"
          onclick="document.getElementById('rawCsv').click()"
@@ -87,17 +121,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4ff;color:#1e293
           <line x1="12" y1="3" x2="12" y2="15" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </div>
-      <div class="drop-title">Drop your raw CSV here or click to browse</div>
+      <div class="drop-title">Drop your raw Hub Level CSV here or click to browse</div>
       <div class="drop-sub">
-        Handles 9 lakh rows · 87 columns · Any file size<br>
-        Expected: Node, Zone, POD, Vertical, Loss Bucket 1, Loss Bucket 2, order_status, previous_order_status, ageing, product_value, debit_value, picked_date, lost_date
+        Required columns: Node · Node Type · Zone · POD · Vertical · Status Category<br>
+        Loss Bucket 1 · Loss Bucket 2 · order_status · previous_order_status<br>
+        ageing · Max Ageing · product_value · debit_value · picked_date · lost_date · picked_month · picked_year
       </div>
       <input type="file" id="rawCsv" accept=".csv" style="display:none" onchange="startProcess(event)">
     </div>
 
     <div class="progress-wrap" id="progressWrap">
       <div class="progress-label" id="progressLabel">Parsing CSV…</div>
-      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
       <div class="progress-sub" id="progressSub">Please wait…</div>
     </div>
 
@@ -109,18 +144,22 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4ff;color:#1e293
       <div class="stat"><div class="stat-label">CB 10+</div><div class="stat-val" id="s-cb">0</div></div>
       <div class="stat"><div class="stat-label">LM-ODC</div><div class="stat-val" id="s-odc">0</div></div>
       <div class="stat"><div class="stat-label">Intransit</div><div class="stat-val" id="s-it">0</div></div>
+      <div class="stat"><div class="stat-label">Fwd Floor Miss</div><div class="stat-val" id="s-fwdFloor">0</div></div>
       <div class="stat"><div class="stat-label">Fwd Short</div><div class="stat-val" id="s-fs">0</div></div>
-      <div class="stat"><div class="stat-label">RVP Short</div><div class="stat-val" id="s-rs">0</div></div>
       <div class="stat"><div class="stat-label">RTO Pend.</div><div class="stat-val" id="s-rto">0</div></div>
+      <div class="stat"><div class="stat-label">Lost Rows</div><div class="stat-val" id="s-lost">0</div></div>
+      <div class="stat"><div class="stat-label">Open Rows</div><div class="stat-val" id="s-open">0</div></div>
     </div>
 
     <div class="download-wrap" id="downloadWrap">
       <h3>✓ Processing complete!</h3>
       <p id="downloadDesc">hub_summary.csv is ready</p>
-      <button class="btn-download" onclick="downloadResult()">↓ Download hub_summary.csv</button>
-      <div class="next-step">
-        <strong>Next step:</strong> Open <strong>step2_dashboard.html</strong> and upload this <strong>hub_summary.csv</strong> file.
-        The dashboard will load instantly with all hub-level data.
+      <button class="btn-dl" onclick="downloadResult()">↓ Download hub_summary.csv</button>
+      <div class="next-info">
+        <strong>Next step:</strong> Open <strong>step2_dashboard.html</strong> → Data Upload tab → Hub Level Upload → upload this <strong>hub_summary.csv</strong>.
+        The dashboard will load all tabs instantly with your hub-level data.
+        <br><br>
+        <strong>Fraud Buckets:</strong> Upload your fraud CSV separately via the "Fraud Buckets Upload" section in the dashboard.
       </div>
     </div>
   </div>
@@ -128,35 +167,46 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4ff;color:#1e293
 </div>
 
 <script>
-// ── BUCKET MATCHERS (trim both key and value to handle trailing spaces)
-function lb2(r) { return (r['Loss Bucket 2'] || r['Loss Bucket 2 '] || '').trim(); }
-function lb1(r) { return (r['Loss Bucket 1'] || '').trim(); }
+// ── COLUMN HELPERS — handles trailing spaces in your headers
+function getCol(r, ...keys) {
+  for (const k of keys) {
+    const v = r[k];
+    if (v !== undefined && v !== null) return String(v).trim();
+  }
+  return '';
+}
+function lb2(r) { return getCol(r, 'Loss Bucket 2', 'Loss Bucket 2 '); }
+function lb1(r) { return getCol(r, 'Loss Bucket 1'); }
+function statusCat(r) { return getCol(r, 'Status Category', 'Status_Category', 'status_category').toLowerCase(); }
 
+// ── BUCKET MATCHERS — exact match your column values
 const BUCKETS = {
   cb:        r => { const v=lb2(r); return v==='LM CB Pendency (Self)' || v==='LM CB Pendency (Franchise)'; },
   odc:       r => lb2(r) === 'LM to ODC Short',
   intransit: r => lb1(r) === 'LH Bag Miss',
-  fwdHigh:   r => lb2(r) === 'DC Forward Floor Miss',
+  fwdFloor:  r => lb2(r) === 'DC Forward Floor Miss',
   fwdShort:  r => { const v=lb2(r); return v==='DCH/DCH2 Short Forward' || v==='DC-DC Short Forward'; },
   rvpShort:  r => lb2(r) === 'DC-DC Short Return',
-  rtoPend:   r => { const p=(r['previous_order_status']||'').trim().toUpperCase(); const o=(r['order_status']||'').trim().toUpperCase(); return p==='RTO' || o==='RTO'; },
-  rvpPend:   r => lb2(r) === 'Floor Miss RVP'
+  rtoPend:   r => { const p=getCol(r,'previous_order_status').toUpperCase(); const o=getCol(r,'order_status').toUpperCase(); return p==='RTO'||o==='RTO'; },
+  rvpPend:   r => lb2(r) === 'Floor Miss RVP',
+  isLost:    r => statusCat(r) === 'lost shipment',
+  isOpen:    r => statusCat(r) === 'open shipment'
 };
 
 let resultCSV = '';
 let hubMap = {};
 let totalRows = 0;
-let diagCounts = { cb:0, odc:0, intransit:0, fwdHigh:0, fwdShort:0, rvpShort:0, rtoPend:0, rvpPend:0 };
+let diagCounts = { cb:0, odc:0, intransit:0, fwdFloor:0, fwdShort:0, rvpShort:0, rtoPend:0, rvpPend:0, lost:0, open:0 };
 
 function dov(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('over'); }
 function dol()  { document.getElementById('dropZone').classList.remove('over'); }
 function dop(e) { e.preventDefault(); dol(); const f=e.dataTransfer.files[0]; if(f) processFile(f); }
-function startProcess(e) { const f=e.target.files[0]; if(f) processFile(f); }
+function startProcess(e) { const f=e.target.files[0]; if(f) processFile(f); e.target.value=''; }
 
-function log(msg) {
+function log(msg, cls='') {
   const lb = document.getElementById('logBox');
   lb.style.display = 'block';
-  lb.innerHTML += msg + '<br>';
+  lb.innerHTML += `<span class="${cls}">${msg}</span><br>`;
   lb.scrollTop = lb.scrollHeight;
 }
 
@@ -167,75 +217,75 @@ function setProgress(pct, label, sub) {
 }
 
 function processFile(file) {
-  // Reset state
   hubMap = {}; totalRows = 0;
   Object.keys(diagCounts).forEach(k => diagCounts[k] = 0);
   document.getElementById('progressWrap').style.display = 'block';
   document.getElementById('statsGrid').style.display = 'none';
   document.getElementById('downloadWrap').style.display = 'none';
   document.getElementById('logBox').innerHTML = '';
+  document.getElementById('logBox').style.display = 'block';
 
-  const fileSizeMB = (file.size / 1024 / 1024).toFixed(1);
+  const fileSizeMB = (file.size/1024/1024).toFixed(1);
   log(`▶ File: ${file.name} (${fileSizeMB} MB)`);
-  setProgress(5, `Reading ${file.name} (${fileSizeMB} MB)…`, 'Starting PapaParse chunk streaming…');
+  setProgress(5, `Reading ${file.name} (${fileSizeMB} MB)…`, 'Starting chunk streaming…');
 
-  let chunkNum = 0;
-  let firstRowLogged = false;
+  let chunkNum = 0, firstRowLogged = false;
+  let sampleLB2vals = new Set();
 
   Papa.parse(file, {
     header: true,
     skipEmptyLines: 'greedy',
     dynamicTyping: false,
     worker: false,
-    chunkSize: 1024 * 512, // 512KB chunks — good balance for 9L rows
-    chunk(results, parser) {
+    chunkSize: 512 * 1024,
+    chunk(results) {
       chunkNum++;
       const rows = results.data;
       totalRows += rows.length;
 
-      // Log headers from first chunk
       if (!firstRowLogged && rows.length > 0) {
         firstRowLogged = true;
         const headers = Object.keys(rows[0]);
-        log(`✓ Headers detected: ${headers.length} columns`);
-        // Check critical columns
-        const critical = ['Node','Zone','POD','Vertical','Loss Bucket 1','order_status','previous_order_status'];
-        const lb2check = headers.find(h => h.trim() === 'Loss Bucket 2');
-        log(`✓ Loss Bucket 2 column: "${lb2check || 'NOT FOUND'}" (raw header)`);
-        const missing = critical.filter(c => !headers.includes(c));
-        if (missing.length) log(`⚠ Missing columns: ${missing.join(', ')}`);
-        else log(`✓ All critical columns present`);
-        log(`--- First row sample ---`);
-        log(`  Node: "${rows[0]['Node']}", Zone: "${rows[0]['Zone']}", LB2: "${lb2(rows[0])}"`);
+        log(`✓ Detected ${headers.length} columns`);
+
+        // Check key columns
+        const required = ['Node','Zone','POD','Loss Bucket 1','order_status','previous_order_status','Status Category'];
+        const lb2raw = headers.find(h => h.trim() === 'Loss Bucket 2');
+        log(`✓ "Loss Bucket 2" header: ${lb2raw ? `"${lb2raw}" (${lb2raw.length} chars)` : 'NOT FOUND'}`);
+        const missing = required.filter(c => !headers.some(h => h.trim()===c));
+        if (missing.length) log(`⚠ Missing columns: ${missing.join(', ')}`, 'warn');
+        else log(`✓ All required columns found`);
+        log(`--- Sample first row ---`);
+        log(`  Node="${getCol(rows[0],'Node')}", Zone="${getCol(rows[0],'Zone')}", Status Category="${statusCat(rows[0])}"`);
+        log(`  LB1="${lb1(rows[0])}", LB2="${lb2(rows[0])}"`);
       }
 
-      // Process each row
       rows.forEach(r => {
-        const node     = (r['Node'] || 'Unknown').trim();
-        const zone     = (r['Zone'] || '—').trim();
-        const pod      = (r['POD']  || '—').trim();
-        const vertical = (r['Vertical'] || '—').trim();
-        const nodeType = (r['Node Type'] || '—').trim();
-        const ageStr   = r['ageing'] || r['Max Ageing'] || '0';
-        const age      = parseFloat(ageStr) || 0;
-        const prodVal  = parseFloat(r['product_value'] || 0);
-        const debitVal = parseFloat(r['debit_value']   || 0);
-        const lostDate = (r['lost_date']   || '').trim();
-        const pickedDt = (r['picked_date'] || '').trim();
-        const month    = r['picked_month'] ? String(r['picked_month']).trim() : '';
-        const year     = r['picked_year']  ? String(r['picked_year']).trim()  : '';
-        const lb2val   = lb2(r);
-        const lb1val   = lb1(r);
+        const node      = getCol(r,'Node') || 'Unknown';
+        const zone      = getCol(r,'Zone')      || '—';
+        const pod       = getCol(r,'POD')       || '—';
+        const vertical  = getCol(r,'Vertical')  || '—';
+        const nodeType  = getCol(r,'Node Type') || '—';
+        const age       = parseFloat(getCol(r,'ageing','Max Ageing') || 0);
+        const prodVal   = parseFloat(getCol(r,'product_value') || 0);
+        const debitVal  = parseFloat(getCol(r,'debit_value') || 0);
+        const lostDate  = getCol(r,'lost_date');
+        const pickedDt  = getCol(r,'picked_date');
+        const month     = getCol(r,'picked_month');
+        const year      = getCol(r,'picked_year');
+        const sc        = statusCat(r);
+
+        // Sample LB2 values for diagnostics (first 20 unique)
+        if (sampleLB2vals.size < 20) sampleLB2vals.add(lb2(r) || '[empty]');
 
         if (!hubMap[node]) {
           hubMap[node] = {
             node, zone, pod, vertical, nodeType,
-            total:0,
-            cb:0, odc:0, intransit:0, fwdHigh:0, fwdShort:0, rvpShort:0, rtoPend:0, rvpPend:0,
-            totalProdVal:0, totalDebitVal:0, totalAge:0,
-            maxAge:0, minDate:'', maxDate:'',
-            // monthly breakdown (last 4 months)
-            months: {}
+            total:0, lost:0, open:0,
+            cb:0, odc:0, intransit:0, fwdFloor:0, fwdShort:0, rvpShort:0, rtoPend:0, rvpPend:0,
+            totalProdVal:0, totalDebitVal:0, totalAge:0, maxAge:0,
+            minDate:'', maxDate:'',
+            months:{}
           };
         }
         const h = hubMap[node];
@@ -245,86 +295,78 @@ function processFile(file) {
         h.totalAge      += age;
         if (age > h.maxAge) h.maxAge = age;
 
-        // Date tracking
-        const dateStr = lostDate || pickedDt;
-        if (dateStr) {
-          if (!h.minDate || dateStr < h.minDate) h.minDate = dateStr;
-          if (!h.maxDate || dateStr > h.maxDate) h.maxDate = dateStr;
+        // Status Category based scoring
+        if (sc === 'lost shipment')  { h.lost++; diagCounts.lost++; }
+        if (sc === 'open shipment')  { h.open++; diagCounts.open++; }
+
+        // Date range
+        const d = lostDate || pickedDt;
+        if (d) {
+          if (!h.minDate || d < h.minDate) h.minDate = d;
+          if (!h.maxDate || d > h.maxDate) h.maxDate = d;
         }
 
-        // Monthly breakdown
+        // Monthly breakdown key
+        let mk = '';
         if (month && year) {
-          const mk = year + '-' + String(month).padStart(2,'0');
-          if (!h.months[mk]) h.months[mk] = { total:0, cb:0, odc:0, intransit:0, fwdShort:0, rvpShort:0, rtoPend:0 };
+          mk = String(year) + '-' + String(month).padStart(2,'0');
+          if (!h.months[mk]) h.months[mk] = { total:0, lost:0, open:0, cb:0, odc:0, intransit:0, fwdFloor:0, fwdShort:0, rvpShort:0, rtoPend:0 };
           h.months[mk].total++;
+          if (sc==='lost shipment') h.months[mk].lost++;
+          if (sc==='open shipment') h.months[mk].open++;
         }
 
-        // Bucket counting
+        // Pendency bucket counts
         const isCB        = BUCKETS.cb(r);
         const isODC       = BUCKETS.odc(r);
         const isIntransit = BUCKETS.intransit(r);
-        const isFwdHigh   = BUCKETS.fwdHigh(r);
+        const isFwdFloor  = BUCKETS.fwdFloor(r);
         const isFwdShort  = BUCKETS.fwdShort(r);
         const isRvpShort  = BUCKETS.rvpShort(r);
         const isRtoPend   = BUCKETS.rtoPend(r);
         const isRvpPend   = BUCKETS.rvpPend(r);
 
-        if (isCB)        { h.cb++;        diagCounts.cb++; }
-        if (isODC)       { h.odc++;       diagCounts.odc++; }
-        if (isIntransit) { h.intransit++; diagCounts.intransit++; }
-        if (isFwdHigh)   { h.fwdHigh++;   diagCounts.fwdHigh++; }
-        if (isFwdShort)  { h.fwdShort++;  diagCounts.fwdShort++; }
-        if (isRvpShort)  { h.rvpShort++;  diagCounts.rvpShort++; }
-        if (isRtoPend)   { h.rtoPend++;   diagCounts.rtoPend++; }
+        if (isCB)        { h.cb++;        diagCounts.cb++;        if (mk && h.months[mk]) h.months[mk].cb++; }
+        if (isODC)       { h.odc++;       diagCounts.odc++;       if (mk && h.months[mk]) h.months[mk].odc++; }
+        if (isIntransit) { h.intransit++; diagCounts.intransit++; if (mk && h.months[mk]) h.months[mk].intransit++; }
+        if (isFwdFloor)  { h.fwdFloor++;  diagCounts.fwdFloor++;  if (mk && h.months[mk]) h.months[mk].fwdFloor++; }
+        if (isFwdShort)  { h.fwdShort++;  diagCounts.fwdShort++;  if (mk && h.months[mk]) h.months[mk].fwdShort++; }
+        if (isRvpShort)  { h.rvpShort++;  diagCounts.rvpShort++;  if (mk && h.months[mk]) h.months[mk].rvpShort++; }
+        if (isRtoPend)   { h.rtoPend++;   diagCounts.rtoPend++;   if (mk && h.months[mk]) h.months[mk].rtoPend++; }
         if (isRvpPend)   { h.rvpPend++;   diagCounts.rvpPend++; }
-
-        // Monthly bucket counts
-        if (month && year) {
-          const mk = year + '-' + String(month).padStart(2,'0');
-          if (h.months[mk]) {
-            if (isCB)        h.months[mk].cb++;
-            if (isODC)       h.months[mk].odc++;
-            if (isIntransit) h.months[mk].intransit++;
-            if (isFwdShort)  h.months[mk].fwdShort++;
-            if (isRvpShort)  h.months[mk].rvpShort++;
-            if (isRtoPend)   h.months[mk].rtoPend++;
-          }
-        }
       });
 
-      // Update progress every chunk
-      const approxPct = Math.min(90, 10 + chunkNum * 3);
-      setProgress(approxPct, `Processing chunk ${chunkNum}…`, `${totalRows.toLocaleString()} rows processed so far`);
-
-      if (chunkNum % 10 === 0) {
-        log(`  Chunk ${chunkNum}: ${totalRows.toLocaleString()} rows → ${Object.keys(hubMap).length} hubs`);
-      }
+      const pct = Math.min(90, 10 + chunkNum * 3);
+      setProgress(pct, `Processing chunk ${chunkNum}…`, `${totalRows.toLocaleString()} rows → ${Object.keys(hubMap).length} hubs`);
+      if (chunkNum % 15 === 0) log(`  Chunk ${chunkNum}: ${totalRows.toLocaleString()} rows, ${Object.keys(hubMap).length} hubs`);
     },
     complete() {
-      setProgress(95, 'Generating hub summary CSV…', 'Almost done…');
-      log(`--- Processing complete ---`);
+      setProgress(95, 'Generating hub_summary.csv…', 'Almost done…');
+      log(`\n--- Complete ---`);
       log(`✓ Total rows: ${totalRows.toLocaleString()}`);
       log(`✓ Unique hubs: ${Object.keys(hubMap).length}`);
-      log(`✓ CB 10+: ${diagCounts.cb.toLocaleString()}, ODC: ${diagCounts.odc.toLocaleString()}, Intransit: ${diagCounts.intransit.toLocaleString()}`);
-      log(`✓ Fwd Short: ${diagCounts.fwdShort.toLocaleString()}, RVP Short: ${diagCounts.rvpShort.toLocaleString()}`);
-      log(`✓ RTO: ${diagCounts.rtoPend.toLocaleString()}, RVP Pend: ${diagCounts.rvpPend.toLocaleString()}`);
+      log(`✓ Lost Shipment rows: ${diagCounts.lost.toLocaleString()}`);
+      log(`✓ Open Shipment rows: ${diagCounts.open.toLocaleString()}`);
+      log(`✓ CB 10+: ${diagCounts.cb.toLocaleString()}`);
+      log(`✓ LM-ODC: ${diagCounts.odc.toLocaleString()}`);
+      log(`✓ Intransit: ${diagCounts.intransit.toLocaleString()}`);
+      log(`✓ Fwd Floor Miss: ${diagCounts.fwdFloor.toLocaleString()}`);
+      log(`✓ Fwd Short: ${diagCounts.fwdShort.toLocaleString()}`);
+      log(`✓ RTO Pend: ${diagCounts.rtoPend.toLocaleString()}`);
 
-      // Check if any bucket matched
-      const totalMatched = Object.values(diagCounts).reduce((s,v)=>s+v,0);
-      if (totalMatched === 0) {
-        log(`⚠ WARNING: No rows matched any bucket filter!`);
-        log(`  Check that 'Loss Bucket 2' column values match exactly:`);
-        // Sample LB2 values
-        const sampleLB2 = new Set();
-        Object.values(hubMap).slice(0,5).forEach(h => {});
-        // Log actual LB2 values from raw data by re-reading - just note it
-        log(`  Tip: The column may have spaces in values. Preprocessor trims all values.`);
+      const totalBucket = Object.entries(diagCounts).filter(([k])=>k!=='lost'&&k!=='open').reduce((s,[,v])=>s+v,0);
+      if (totalBucket === 0 && totalRows > 0) {
+        log(`⚠ WARNING: No rows matched any bucket filter!`, 'warn');
+        log(`  Sample Loss Bucket 2 values found:`, 'warn');
+        [...sampleLB2vals].forEach(v => log(`    → "${v}"`, 'warn'));
+        log(`  Expected values like: "LM CB Pendency (Self)", "LH Bag Miss", etc.`, 'warn');
+        log(`  Check for extra spaces or different capitalisation.`, 'warn');
       }
 
-      setTimeout(() => generateCSV(), 50);
+      setTimeout(generateCSV, 50);
     },
     error(err) {
-      log(`✗ ERROR: ${err.message}`);
+      log(`✗ ERROR: ${err.message}`, 'err');
       setProgress(0, 'Error', err.message);
     }
   });
@@ -332,81 +374,80 @@ function processFile(file) {
 
 function generateCSV() {
   const hubs = Object.values(hubMap);
-  if (!hubs.length) {
-    log('✗ No hub data generated — check your CSV format');
-    return;
-  }
+  if (!hubs.length) { log('✗ No hub data — check CSV format', 'err'); return; }
 
-  // Collect all month keys for monthly columns
-  const allMonths = new Set();
-  hubs.forEach(h => Object.keys(h.months).forEach(m => allMonths.add(m)));
-  const sortedMonths = [...allMonths].sort().slice(-6); // last 6 months
+  // Collect all month keys
+  const mSet = new Set();
+  hubs.forEach(h => Object.keys(h.months).forEach(m => mSet.add(m)));
+  const sortedMonths = [...mSet].sort().slice(-6);
 
-  // Build CSV header
   const monthCols = [];
   sortedMonths.forEach(m => {
-    monthCols.push(`m_${m}_total`, `m_${m}_cb`, `m_${m}_odc`, `m_${m}_intransit`, `m_${m}_fwdShort`, `m_${m}_rvpShort`, `m_${m}_rtoPend`);
+    monthCols.push(
+      `m_${m}_total`, `m_${m}_lost`, `m_${m}_open`,
+      `m_${m}_cb`, `m_${m}_odc`, `m_${m}_intransit`,
+      `m_${m}_fwdFloor`, `m_${m}_fwdShort`, `m_${m}_rvpShort`, `m_${m}_rtoPend`
+    );
   });
 
   const headers = [
     'Node','Zone','POD','Vertical','Node Type',
-    'total_rows',
-    'cb_count','odc_count','intransit_count','fwdHigh_count','fwdShort_count','rvpShort_count','rtoPend_count','rvpPend_count',
+    'total_rows','lost_count','open_count',
+    'cb_count','odc_count','intransit_count','fwdFloor_count','fwdShort_count',
+    'rvpShort_count','rtoPend_count','rvpPend_count',
     'total_prod_value','total_debit_value','avg_ageing','max_ageing',
     'min_date','max_date',
     ...monthCols
   ];
 
   const rows = [headers.join(',')];
-
   hubs.forEach(h => {
-    const avgAge = h.total > 0 ? (h.totalAge / h.total).toFixed(1) : '0';
-    const baseRow = [
-      esc(h.node), esc(h.zone), esc(h.pod), esc(h.vertical), esc(h.nodeType),
-      h.total,
-      h.cb, h.odc, h.intransit, h.fwdHigh, h.fwdShort, h.rvpShort, h.rtoPend, h.rvpPend,
+    const avgAge = h.total > 0 ? (h.totalAge/h.total).toFixed(1) : '0';
+    const base = [
+      e(h.node), e(h.zone), e(h.pod), e(h.vertical), e(h.nodeType),
+      h.total, h.lost, h.open,
+      h.cb, h.odc, h.intransit, h.fwdFloor, h.fwdShort,
+      h.rvpShort, h.rtoPend, h.rvpPend,
       Math.round(h.totalProdVal), Math.round(h.totalDebitVal), avgAge, h.maxAge.toFixed(0),
-      esc(h.minDate), esc(h.maxDate)
+      e(h.minDate), e(h.maxDate)
     ];
-    const monthRow = [];
+    const mRow = [];
     sortedMonths.forEach(m => {
-      const md = h.months[m] || { total:0,cb:0,odc:0,intransit:0,fwdShort:0,rvpShort:0,rtoPend:0 };
-      monthRow.push(md.total, md.cb, md.odc, md.intransit, md.fwdShort, md.rvpShort, md.rtoPend);
+      const d = h.months[m] || { total:0, lost:0, open:0, cb:0, odc:0, intransit:0, fwdFloor:0, fwdShort:0, rvpShort:0, rtoPend:0 };
+      mRow.push(d.total, d.lost||0, d.open||0, d.cb, d.odc, d.intransit, d.fwdFloor||0, d.fwdShort, d.rvpShort, d.rtoPend);
     });
-    rows.push([...baseRow, ...monthRow].join(','));
+    rows.push([...base, ...mRow].join(','));
   });
 
   resultCSV = rows.join('\n');
-  setProgress(100, 'Done!', `${hubs.length} hubs · ${rows.length - 1} summary rows`);
+  setProgress(100, 'Done!', `${hubs.length} hubs · ${rows.length-1} summary rows`);
 
-  // Update stat cards
-  document.getElementById('s-total').textContent  = totalRows.toLocaleString();
-  document.getElementById('s-hubs').textContent   = hubs.length.toLocaleString();
-  document.getElementById('s-cb').textContent     = diagCounts.cb.toLocaleString();
-  document.getElementById('s-odc').textContent    = diagCounts.odc.toLocaleString();
-  document.getElementById('s-it').textContent     = diagCounts.intransit.toLocaleString();
-  document.getElementById('s-fs').textContent     = diagCounts.fwdShort.toLocaleString();
-  document.getElementById('s-rs').textContent     = diagCounts.rvpShort.toLocaleString();
-  document.getElementById('s-rto').textContent    = diagCounts.rtoPend.toLocaleString();
+  document.getElementById('s-total').textContent    = totalRows.toLocaleString();
+  document.getElementById('s-hubs').textContent     = hubs.length.toLocaleString();
+  document.getElementById('s-cb').textContent       = diagCounts.cb.toLocaleString();
+  document.getElementById('s-odc').textContent      = diagCounts.odc.toLocaleString();
+  document.getElementById('s-it').textContent       = diagCounts.intransit.toLocaleString();
+  document.getElementById('s-fwdFloor').textContent = diagCounts.fwdFloor.toLocaleString();
+  document.getElementById('s-fs').textContent       = diagCounts.fwdShort.toLocaleString();
+  document.getElementById('s-rto').textContent      = diagCounts.rtoPend.toLocaleString();
+  document.getElementById('s-lost').textContent     = diagCounts.lost.toLocaleString();
+  document.getElementById('s-open').textContent     = diagCounts.open.toLocaleString();
   document.getElementById('statsGrid').style.display = 'grid';
 
-  const sizeKB = (new Blob([resultCSV]).size / 1024).toFixed(0);
-  document.getElementById('downloadDesc').textContent =
-    `hub_summary.csv — ${hubs.length} hub rows · ${sizeKB} KB (was ${(totalRows/10000).toFixed(0)} lakh rows)`;
+  const kb = (new Blob([resultCSV]).size/1024).toFixed(0);
+  document.getElementById('downloadDesc').textContent = `hub_summary.csv — ${hubs.length} hub rows · ${kb} KB (compressed from ${(totalRows/100000).toFixed(1)} lakh rows)`;
   document.getElementById('downloadWrap').style.display = 'block';
-
-  log(`✓ hub_summary.csv ready — ${hubs.length} rows, ${sizeKB} KB`);
-  log(`▶ Download and upload to step2_dashboard.html`);
+  log(`✓ hub_summary.csv ready — ${hubs.length} rows, ${kb} KB`);
 }
 
-function esc(v) {
-  const s = String(v || '');
-  return s.includes(',') || s.includes('"') ? '"' + s.replace(/"/g,'""') + '"' : s;
+function e(v) {
+  const s = String(v||'');
+  return (s.includes(',') || s.includes('"') || s.includes('\n')) ? '"' + s.replace(/"/g,'""') + '"' : s;
 }
 
 function downloadResult() {
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([resultCSV], {type:'text/csv'}));
+  a.href = URL.createObjectURL(new Blob([resultCSV],{type:'text/csv'}));
   a.download = 'hub_summary.csv';
   a.click();
 }
